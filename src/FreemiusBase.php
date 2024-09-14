@@ -16,7 +16,7 @@ use Freemius\SDK\Exceptions\OAuthException;
  */
 abstract class FreemiusBase
 {
-    const VERSION = '1.0.4';
+    const VERSION = '1.0.0'; // Updated version for the refactored SDK
     const FORMAT = 'json';
 
     /**
@@ -95,7 +95,7 @@ abstract class FreemiusBase
 
         // Trim '.json' suffix.
         $formatLength = strlen('.' . self::FORMAT);
-        $start = $formatLength * (-1); //negative
+        $start = $formatLength * (-1); // negative
         if (substr(strtolower($path), $start) === ('.' . self::FORMAT)) {
             $path = substr($path, 0, strlen($path) - $formatLength);
         }
@@ -105,15 +105,15 @@ abstract class FreemiusBase
             'developer' => '/developers/' . $this->_id,
             'store'      => '/stores/' . $this->_id,
             'user'       => '/users/' . $this->_id,
-            'plugin'    => '/plugins/' . $this->_id,
-            'install'    => '/installs/' . $this->_id,
+            'plugin'    => '/developers/{developer_id}/plugins/' . $this->_id, // Added developer_id placeholder
+            'install'    => '/developers/{developer_id}/plugins/{plugin_id}/installs/' . $this->_id, // Added placeholders
             default     => throw new InvalidArgumentException('Invalid scope: ' . $this->_scope)
         };
 
-        // Use self::VERSION instead of FS_API__VERSION
-        return '/v' . self::VERSION . $base .
-            (!empty($path) ? '/' : '') . $path .
-            ((false === strpos($path, '.')) ? '.' . self::FORMAT : '') . $query;
+        // Removed extra '/v' . self::VERSION
+        return $base .
+               (!empty($path) ? '/' : '') . $path .
+               ((false === strpos($path, '.')) ? '.' . self::FORMAT : '') . $query;
     }
 
     /**
@@ -144,15 +144,9 @@ abstract class FreemiusBase
     {
         $method = strtoupper($method);
 
-        // Handle PUT requests as POST with method=PUT
-        if ('PUT' === $method) {
-            $query = parse_url($path, PHP_URL_QUERY);
-            $path .= (is_string($query) ? '&' : '?') . 'method=PUT';
-            $method = 'POST';
-        }
+        // Removed redundant PUT to POST conversion
 
         try {
-            // Ensure we're using the mocked client
             $result = $this->makeRequest($this->canonizePath($path), $method, $params, $fileParams);
         } catch (OAuthException $e) {
             throw new ApiException($e->getMessage(), $e->getCode(), $e);
@@ -174,7 +168,6 @@ abstract class FreemiusBase
      */
     public function test(): bool
     {
-        // Use self::VERSION instead of FS_API__VERSION
         $pong = $this->_api('/v' . self::VERSION . '/ping.json');
 
         return (is_object($pong) && isset($pong->api) && 'pong' === $pong->api);
@@ -189,7 +182,6 @@ abstract class FreemiusBase
     public function findClockDiff(): int
     {
         $time = time();
-        // Use self::VERSION instead of FS_API__VERSION
         $pong = $this->_api('/v' . self::VERSION . '/ping.json');
 
         return ($time - strtotime($pong->timestamp));

@@ -45,8 +45,8 @@ class FreemiusTest extends TestCase
                         'plans'             => '3,4,5',
                         'features'          => '123,8972,1234,5123,43',
                         'money_back_period' => 30,
-                        'created'           => '2024-08-13 13:12:11',
-                        'updated'           => '2024-08-13 13:12:11',
+                        'created'           => '2014-10-13 13:12:11',
+                        'updated'           => '2014-10-13 13:12:11',
                     ],
                     [
                         'id'                => '3423',
@@ -58,8 +58,8 @@ class FreemiusTest extends TestCase
                         'plans'             => '5,6',
                         'features'          => '1,2,3,4,5,6',
                         'money_back_period' => 14,
-                        'created'           => '2024-06-13 13:12:11',
-                        'updated'           => '2024-09-13 13:12:11',
+                        'created'           => '2014-11-13 13:12:11',
+                        'updated'           => '2014-12-13 13:12:11',
                     ],
                 ]
             ])), // Mock plugins response with data
@@ -67,11 +67,11 @@ class FreemiusTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
 
-        $this->freemius = new Freemius('developer', 12345, 'pk_test', 'sk_test', true);
+        $this->freemius = new Freemius('developer', 17789, 'pk_test', 'sk_test', true);
         $this->freemius->setClient($client); // Inject the mocked client
     }
 
-     /**
+    /**
      * Test API connectivity using the ping endpoint.
      */
     #[Covers('\Freemius\SDK\FreemiusBase::test')]
@@ -109,15 +109,15 @@ class FreemiusTest extends TestCase
     public function testCanonizePath(): void
     {
         $this->assertEquals(
-            '/v1.0.4/developers/12345/plugins.json', // Updated to match the VERSION constant
+            '/developers/17789/plugins.json', // Updated to match the VERSION constant
             $this->freemius->canonizePath('plugins')
         );
         $this->assertEquals(
-            '/v1.0.4/developers/12345/plugins.json', // Updated to match the VERSION constant
+            '/developers/17789/plugins.json', // Updated to match the VERSION constant
             $this->freemius->canonizePath('plugins.json')
         );
         $this->assertEquals(
-            '/v1.0.4/developers/12345/plugins/123.json?test=1', // Updated to match the VERSION constant
+            '/developers/17789/plugins/123.json?test=1', // Updated to match the VERSION constant
             $this->freemius->canonizePath('/plugins/123?test=1')
         );
     }
@@ -136,7 +136,7 @@ class FreemiusTest extends TestCase
 
         // Updated assertion to match the actual generated URL
         $this->assertStringContainsString(
-            '/v1.0.4/developers/12345/plugins.json?',
+            '/developers/17789/plugins.json?',
             $url
         );
         $this->assertStringContainsString('auth_date=', $url);
@@ -197,11 +197,11 @@ class FreemiusTest extends TestCase
     #[Covers('\Freemius\SDK\Freemius::getMimeContentType')]
     public function testGetMimeContentType(): void
     {
-        $this->assertEquals('application/zip', $this->getMimeContentType('test.zip'));
-        $this->assertEquals('image/jpeg', $this->getMimeContentType('test.jpg'));
-        $this->assertEquals('image/png', $this->getMimeContentType('test.png'));
+        $this->assertEquals('application/zip', $this->freemius->getMimeContentType('test.zip'));
+        $this->assertEquals('image/jpeg', $this->freemius->getMimeContentType('test.jpg'));
+        $this->assertEquals('image/png', $this->freemius->getMimeContentType('test.png'));
 
         $this->expectException(InvalidArgumentException::class);
-        $this->getMimeContentType('test.unknown');
+        $this->freemius->getMimeContentType('test.unknown');
     }
 }

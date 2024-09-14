@@ -7,7 +7,6 @@ use Freemius\SDK\Exceptions\ApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -142,12 +141,10 @@ class Freemius extends FreemiusBase
         $auth = [
             'date'          => $date,
             'authorization' => $authType . ' ' . $this->_id . ':' .
-                $this->_public . ':' .
-                self::base64UrlEncode(hash_hmac(
-                    'sha256',
-                    $stringToSign,
-                    $this->_secret
-                )),
+                               $this->_public . ':' .
+                               self::base64UrlEncode(hash_hmac(
+                                   'sha256', $stringToSign, $this->_secret
+                               )),
         ];
 
         if (!empty($contentMd5)) {
@@ -174,12 +171,12 @@ class Freemius extends FreemiusBase
 
         return $this->getUrl(
             $resourceUrl . '?' .
-                (1 < count($resource) && !empty($resource[1]) ? $resource[1] . '&' : '') .
-                http_build_query([
-                    'auth_date'    => $auth['date'],
-                    'authorization' => $auth['authorization'],
-                    'is_premium'   => $isPremium, // Add is_premium parameter
-                ])
+            (1 < count($resource) && !empty($resource[1]) ? $resource[1] . '&' : '') .
+            http_build_query([
+                'auth_date'    => $auth['date'],
+                'authorization' => $auth['authorization'],
+                'is_premium'   => $isPremium, // Add is_premium parameter
+            ])
         );
     }
 
@@ -204,8 +201,10 @@ class Freemius extends FreemiusBase
         $options = [];
         $jsonEncodedParams = json_encode($params);
 
-        // Handle PUT requests as POST with method=PUT
-        if ('PUT' === $method) {
+        // Handle PUT requests as POST with method=PUT for specific endpoints
+        if ('PUT' === $method &&
+            (strpos($canonizedPath, '/tags/') !== false || strpos($canonizedPath, '/info.json') !== false)
+        ) {
             $query = parse_url($canonizedPath, PHP_URL_QUERY);
             $canonizedPath .= (is_string($query) ? '&' : '?') . 'method=PUT';
             $method = 'POST';
@@ -321,7 +320,7 @@ class Freemius extends FreemiusBase
      * @return string MIME content type.
      * @throws InvalidArgumentException If the file type is unknown.
      */
-    protected function getMimeContentType(string $filename): string // Changed to protected
+    protected function getMimeContentType(string $filename): string
     {
         $mimeTypes = [
             'zip'  => 'application/zip',
