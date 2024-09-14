@@ -16,23 +16,16 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Freemius\SDK\Tests
  */
-class FreemiusTest extends TestCase
-{
-    /**
-     * @var Freemius Freemius API instance.
-     */
-    private Freemius $freemius;
-
-    /**
-     * Set up for test cases.
-     */
-    protected function setUp(): void
+protected function setUp(): void
     {
         parent::setUp();
 
         // Mock the HTTP client
         $mock = new MockHandler([
-            new Response(200, [], json_encode(['api' => 'pong', 'timestamp' => '2023-12-19T12:00:00Z'])), // Mock ping response
+            new Response(200, [], json_encode([
+                'api'       => 'pong',
+                'timestamp' => '2023-12-19T12:00:00Z'
+            ])), // Mock ping response
             new Response(200, [], json_encode([
                 'plugins' => [
                     [
@@ -109,15 +102,15 @@ class FreemiusTest extends TestCase
     public function testCanonizePath(): void
     {
         $this->assertEquals(
-            '/developers/17789/plugins.json', // Updated to match the VERSION constant
+            '/developers/17789/plugins.json',
             $this->freemius->canonizePath('plugins')
         );
         $this->assertEquals(
-            '/developers/17789/plugins.json', // Updated to match the VERSION constant
+            '/developers/17789/plugins.json',
             $this->freemius->canonizePath('plugins.json')
         );
         $this->assertEquals(
-            '/developers/17789/plugins/123.json?test=1', // Updated to match the VERSION constant
+            '/developers/17789/plugins/123.json?test=1',
             $this->freemius->canonizePath('/plugins/123?test=1')
         );
     }
@@ -202,6 +195,7 @@ class FreemiusTest extends TestCase
         $this->assertEquals('image/png', $this->freemius->getMimeContentType('test.png'));
 
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown file type: test.unknown'); // Add the exception message
         $this->freemius->getMimeContentType('test.unknown');
     }
 }

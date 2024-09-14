@@ -105,15 +105,15 @@ abstract class FreemiusBase
             'developer' => '/developers/' . $this->_id,
             'store'      => '/stores/' . $this->_id,
             'user'       => '/users/' . $this->_id,
-            'plugin'    => '/developers/{developer_id}/plugins/' . $this->_id, // Added developer_id placeholder
-            'install'    => '/developers/{developer_id}/plugins/{plugin_id}/installs/' . $this->_id, // Added placeholders
+            'plugin'    => '/developers/{developer_id}/plugins/' . $this->_id,
+            'install'    => '/developers/{developer_id}/plugins/{plugin_id}/installs/' . $this->_id,
             default     => throw new InvalidArgumentException('Invalid scope: ' . $this->_scope)
         };
 
-        // Removed extra '/v' . self::VERSION
-        return $base .
-               (!empty($path) ? '/' : '') . $path .
-               ((false === strpos($path, '.')) ? '.' . self::FORMAT : '') . $query;
+        // Prepend /v1/ to the endpoint path
+        return  '/v1' . $base .
+                (!empty($path) ? '/' : '') . $path .
+                ((false === strpos($path, '.')) ? '.' . self::FORMAT : '') . $query; 
     }
 
     /**

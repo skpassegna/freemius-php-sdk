@@ -320,7 +320,7 @@ class Freemius extends FreemiusBase
      * @return string MIME content type.
      * @throws InvalidArgumentException If the file type is unknown.
      */
-    protected function getMimeContentType(string $filename): string
+    public function getMimeContentType(string $filename): string
     {
         $mimeTypes = [
             'zip'  => 'application/zip',
