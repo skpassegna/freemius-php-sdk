@@ -1,2 +1,5 @@
 /vendor/*
 /.phpunit.cache/*
+/vendor
+/tests/_output
+/tests/coverage

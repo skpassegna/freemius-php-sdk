@@ -1,6 +1,6 @@
 {
     "name": "skpassegna/freemius-php-sdk",
-    "description": "Freemius PHP SDK for seamless integration with the Freemius platform.",
+    "description": "An unofficial but fully refactored and modernized Freemius PHP SDK for seamless integration with the Freemius platform.",
     "keywords": [
         "freemius",
         "sdk",
@@ -20,8 +20,7 @@
         }
     ],
     "require": {
-        "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.9"
+        "php": "^8.0"
     },
     "autoload": {
         "psr-4": {
