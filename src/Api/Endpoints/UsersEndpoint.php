@@ -203,7 +203,7 @@ class UsersEndpoint
      * @return string The CSV content.
      * @throws ApiException If the API request fails.
      */
-    public function downloadUsersCSV(int $pluginId, array $params = []): string
+    public function downloadUsersCSV(int $pluginId, array $params = []): string|array
     {
         $url = sprintf(
             '/developers/%d/plugins/%d/users.csv',
