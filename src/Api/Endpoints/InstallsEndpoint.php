@@ -432,7 +432,7 @@ class InstallsEndpoint
      * @return string The plugin zip file content.
      * @throws ApiException If the API request fails.
      */
-    public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string
+    public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string|array
     {
         $url = sprintf(
             '/developers/%d/plugins/%d/installs/%d/updates/%d.zip',
