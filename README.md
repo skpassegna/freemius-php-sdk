@@ -1,5 +1,5 @@
 # Freemius PHP SDK
-
+_Under quick refatoring and editing :-)_
 This is an unofficial PHP SDK for seamless integration with the Freemius platform. It provides a convenient way to interact with the Freemius API, enabling you to manage licenses, subscriptions, user accounts, and more.
 
 ## Motivation
@@ -30,7 +30,7 @@ composer require skpassegna/freemius-php-sdk
 
 ## Usage
 
-[Detailed usage instructions and examples are provided in the documentation.](https://github.com/skpassegna/freemius-php-sdk/wiki)
+[Detailed usage instructions and examples are provided in the documentation.](https://github.com/skpassegna/freemius-php-sdk/#)
 
 ## Contributing
 
