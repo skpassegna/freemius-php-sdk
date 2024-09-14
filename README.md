@@ -30,7 +30,7 @@ composer require skpassegna/freemius-php-sdk
 
 ## Usage
 
-(Detailed usage instructions and examples will be provided in the documentation.)
+[Detailed usage instructions and examples are provided in the documentation.](https://github.com/skpassegna/freemius-php-sdk/wiki)
 
 ## Contributing
 
