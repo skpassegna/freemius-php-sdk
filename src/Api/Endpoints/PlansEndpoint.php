@@ -2,8 +2,8 @@
 
 namespace Freemius\SDK\Api\Endpoints;
 
-use Freemius\SDK\Api\Authentication\AuthenticatorInterface;
-use Freemius\SDK\Api\Http\HttpClientInterface;
+use Freemius\SDK\Authentication\AuthenticatorInterface;
+use Freemius\SDK\Http\HttpClientInterface;
 use Freemius\SDK\Entities\Plan;
 use Freemius\SDK\Exceptions\ApiException;
 
