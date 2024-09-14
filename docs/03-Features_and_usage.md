@@ -1007,3 +1007,835 @@ if (isset($response->id)) {
 - Refunding a payment will create a new payment record with a negative `gross` amount, linked to the original payment using the `bound_payment_id` property.
 - Make sure you have the necessary permissions and integrations with your payment gateway to process refunds.
 
+
+
+### 6. Working with Plans and Features
+
+This section covers how to manage pricing plans and features associated with your Freemius plugins using the SDK.
+
+#### Retrieving Plan Information
+
+To retrieve information about a specific plan, use the `api()` method with the `GET` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/plans/{plan_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+// Assuming $freemius is initialized with the 'developer' scope
+$plan = $freemius->api('/plugins/123/plans/456.json', 'GET');
+
+// Access plan properties
+echo 'Plan ID: ' . $plan->id . '<br>';
+echo 'Title: ' . $plan->title . '<br>';
+echo 'Description: ' . $plan->description . '<br>';
+echo 'Trial Period: ' . $plan->trial_period . ' days<br>';
+// ... other plan details
+```
+
+**Filtering Plan Data:**
+
+You can filter the list of plans returned by the `/developers/{developer_id}/plugins/{plugin_id}/plans.json` endpoint using various parameters.
+
+**Example: Retrieving Featured Plans:**
+
+```php
+$plans = $freemius->api('/plugins/123/plans.json', 'GET', [
+    'is_featured' => true,
+]);
+
+// ... process the filtered plans
+```
+
+**Available Filters:**
+
+- `is_featured`: Filter by featured plans.
+
+**Response Structure:**
+
+The response from the plan endpoints will be a JSON object containing either a single plan object (when retrieving a specific plan) or a `plans` array (when retrieving a list of plans). Each plan object has the following properties:
+
+| Property                  | Description                                                                                                                                                               |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                      | The unique ID of the plan.                                                                                                                                             |
+| `plugin_id`               | The ID of the plugin associated with the plan.                                                                                                                          |
+| `name`                   | The unique name of the plan (e.g., 'basic', 'pro').                                                                                                                      |
+| `title`                  | The title of the plan (e.g., 'Basic Plan', 'Pro Plan').                                                                                                                  |
+| `description`            | A description of the plan.                                                                                                                                               |
+| `is_free_localhost`      | Indicates whether the plan can be used on unlimited localhost installs.                                                                                              |
+| `is_block_features`      | Indicates whether the plugin's features are blocked after the license expires for this plan. If `false`, only updates and support are blocked.                           |
+| `license_type`           | The type of license associated with the plan (`0`: per domain, `1`: per subdomain).                                                                                     |
+| `trial_period`           | The number of trial days offered for the plan.                                                                                                                           |
+| `is_require_subscription`| Indicates whether a credit card or PayPal subscription is required even if a trial period is offered.                                                                    |
+| `support_kb`             | The URL of the support knowledge base for the plan.                                                                                                                     |
+| `support_forum`          | The URL of the support forum for the plan.                                                                                                                                |
+| `support_email`          | The support email address for the plan.                                                                                                                                   |
+| `support_phone`          | The support phone number for the plan.                                                                                                                                   |
+| `support_skype`          | The support Skype username for the plan.                                                                                                                                   |
+| `is_success_manager`     | Indicates whether the plan includes a personal success manager.                                                                                                         |
+| `is_https_support`       | Indicates whether the plan includes HTTPS support.                                                                                                                       |
+| `is_featured`            | Indicates whether the plan is featured (recommended).                                                                                                                    |
+| `created`                | The date and time the plan was created.                                                                                                                                |
+| `updated`                | The date and time the plan was last updated.                                                                                                                           |
+
+#### Creating Plans
+
+To create a new pricing plan, use the `api()` method with the `POST` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/plans.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/plans.json', 'POST', [
+    'name'                    => 'premium',
+    'title'                   => 'Premium Plan',
+    'description'             => 'Access all features and priority support.',
+    'is_free_localhost'       => false,
+    'license_type'            => 0, // Per domain
+    'trial_period'            => 14,
+    'is_require_subscription' => true,
+    'support_email'          => 'support@example.com',
+    // ... other plan details
+]);
+
+// Check if the plan creation was successful
+if (isset($response->id)) {
+    echo 'Plan created successfully with ID: ' . $response->id;
+} else {
+    echo 'Error creating plan.';
+}
+```
+
+**Parameters:**
+
+Refer to the "Response Structure" table above for a list of plan properties and their descriptions.
+
+**Important Notes:**
+
+- The new plan will be appended as the last (most expensive) plan.
+- If the plugin doesn't have any plans yet, the new plan will be automatically set as the default plan.
+
+#### Updating Plans
+
+To update plan information, use the `api()` method with the `PUT` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/plans/{plan_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/plans/456.json', 'PUT', [
+    'title'       => 'Updated Plan Title',
+    'description' => 'Updated plan description.',
+    'trial_period' => 7,
+    // ... other plan details
+]);
+
+// Check if the update was successful
+if (isset($response->id)) {
+    echo 'Plan updated successfully!';
+} else {
+    echo 'Error updating plan.';
+}
+```
+
+**Parameters:**
+
+Refer to the "Response Structure" table above for a list of plan properties that can be updated.
+
+#### Deleting Plans
+
+To delete a pricing plan, use the `api()` method with the `DELETE` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/plans/{plan_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/plans/456.json', 'DELETE');
+
+// Check if the deletion was successful
+if ($response === '') { // Successful DELETE requests return an empty response
+    echo 'Plan deleted successfully!';
+} else {
+    echo 'Error deleting plan.';
+}
+```
+
+**Important Note:**
+
+- Existing installs with the deleted plan active will continue to use it based on the plan's terms.
+
+#### Retrieving Feature Information
+
+To retrieve information about a specific feature, use the `api()` method with the `GET` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/features/{feature_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$feature = $freemius->api('/plugins/123/features/789.json', 'GET');
+
+// Access feature properties
+echo 'Feature ID: ' . $feature->id . '<br>';
+echo 'Title: ' . $feature->title . '<br>';
+echo 'Description: ' . $feature->description . '<br>';
+// ... other feature details
+```
+
+**Filtering Feature Data:**
+
+You can filter the list of features returned by the `/developers/{developer_id}/plugins/{plugin_id}/features.json` endpoint using the `plan_id` parameter to retrieve features associated with a specific plan.
+
+**Example:**
+
+```php
+$features = $freemius->api('/plugins/123/features.json', 'GET', [
+    'plan_id' => 456,
+]);
+
+// ... process the filtered features
+```
+
+**Response Structure:**
+
+The response from the feature endpoints will be a JSON object containing either a single feature object (when retrieving a specific feature) or a `features` array (when retrieving a list of features). Each feature object has the following properties:
+
+| Property       | Description                                                                                                                                         |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`           | The unique ID of the feature.                                                                                                                         |
+| `plugin_id`    | The ID of the plugin associated with the feature.                                                                                                  |
+| `title`        | The title of the feature.                                                                                                                            |
+| `description` | A description of the feature.                                                                                                                       |
+| `is_featured` | Indicates whether the feature is featured in the pricing table.                                                                                     |
+| `created`      | The date and time the feature was created.                                                                                                          |
+| `updated`      | The date and time the feature was last updated.                                                                                                     |
+
+#### Creating Features
+
+To create a new feature, use the `api()` method with the `POST` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/features.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/features.json', 'POST', [
+    'title'       => 'New Feature',
+    'description' => 'Description of the new feature.',
+    'is_featured' => true,
+]);
+
+// Check if the feature creation was successful
+if (isset($response->id)) {
+    echo 'Feature created successfully with ID: ' . $response->id;
+} else {
+    echo 'Error creating feature.';
+}
+```
+
+**Parameters:**
+
+- `title`: (Required) The title of the new feature.
+- `description`: (Optional) A description of the new feature.
+- `is_featured`: (Optional) Whether the feature should be featured in the pricing table (defaults to `false`).
+
+**Response:**
+
+If the feature creation is successful, the response will contain the newly created feature object.
+
+#### Updating Features
+
+To update feature information, use the `api()` method with the `PUT` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/features/{feature_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/features/789.json', 'PUT', [
+    'title'       => 'Updated Feature Title',
+    'description' => 'Updated feature description.',
+]);
+
+// Check if the update was successful
+if (isset($response->id)) {
+    echo 'Feature updated successfully!';
+} else {
+    echo 'Error updating feature.';
+}
+```
+
+**Parameters:**
+
+- `title`: (Optional) The updated title of the feature.
+- `description`: (Optional) The updated description of the feature.
+- `is_featured`: (Optional) Whether the feature should be featured in the pricing table.
+
+**Response:**
+
+If the feature update is successful, the response will contain the updated feature object.
+
+#### Deleting Features
+
+To delete a feature, use the `api()` method with the `DELETE` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/features/{feature_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/features/789.json', 'DELETE');
+
+// Check if the deletion was successful
+if ($response === '') { // Successful DELETE requests return an empty response
+    echo 'Feature deleted successfully!';
+} else {
+    echo 'Error deleting feature.';
+}
+```
+
+
+
+### 7. Managing Coupons and Promotions
+
+This section covers how to manage coupons and promotions associated with your Freemius plugins using the SDK.
+
+#### Retrieving Coupon Information
+
+To retrieve information about a specific coupon, use the `api()` method with the `GET` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/coupons/{coupon_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+// Assuming $freemius is initialized with the 'developer' scope
+$coupon = $freemius->api('/plugins/123/coupons/456.json', 'GET');
+
+// Access coupon properties
+echo 'Coupon ID: ' . $coupon->id . '<br>';
+echo 'Code: ' . $coupon->code . '<br>';
+echo 'Discount: ' . $coupon->discount . ' (' . $coupon->discount_type . ')<br>';
+echo 'Start Date: ' . $coupon->start_date . '<br>';
+echo 'End Date: ' . $coupon->end_date . '<br>';
+// ... other coupon details
+```
+
+**Filtering Coupon Data:**
+
+You can filter the list of coupons returned by the `/developers/{developer_id}/plugins/{plugin_id}/coupons.json` endpoint using the `count` parameter to limit the number of coupons retrieved.
+
+**Example:**
+
+```php
+$coupons = $freemius->api('/plugins/123/coupons.json', 'GET', [
+    'count' => 10, // Retrieve only the first 10 coupons
+]);
+
+// ... process the filtered coupons
+```
+
+**Response Structure:**
+
+The response from the coupon endpoints will be a JSON object containing either a single coupon object (when retrieving a specific coupon) or a `coupons` array (when retrieving a list of coupons). Each coupon object has the following properties:
+
+| Property                | Description                                                                                                                                                               |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                      | The unique ID of the coupon.                                                                                                                                             |
+| `plugin_id`               | The ID of the plugin associated with the coupon.                                                                                                                          |
+| `plans`                   | A comma-separated list of plan IDs that the coupon applies to, or `null` if it applies to all plans.                                                                      |
+| `code`                    | The coupon code.                                                                                                                                                         |
+| `discount`                | The discount amount or percentage.                                                                                                                                          |
+| `discount_type`           | The type of discount (`percentage` or `dollar`).                                                                                                                         |
+| `start_date`              | The date and time when the coupon becomes valid.                                                                                                                          |
+| `end_date`                | The date and time when the coupon expires.                                                                                                                                |
+| `redemptions`            | The number of times the coupon has been redeemed.                                                                                                                          |
+| `redemptions_limit`       | The maximum number of times the coupon can be redeemed, or `null` for unlimited redemptions.                                                                              |
+| `has_renewals_discount`   | Indicates whether the discount applies to renewals. If `false`, the discount only applies to the first payment.                                                            |
+| `has_addons_discount`     | Indicates whether the discount applies to add-ons.                                                                                                                        |
+| `is_one_per_user`         | Indicates whether the coupon can only be redeemed once per user.                                                                                                          |
+| `is_active`               | Indicates whether the coupon is active.                                                                                                                                   |
+| `created`                | The date and time the coupon was created.                                                                                                                                |
+| `updated`                | The date and time the coupon was last updated.                                                                                                                           |
+
+#### Creating Coupons
+
+To create a new coupon, use the `api()` method with the `POST` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/coupons.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/coupons.json', 'POST', [
+    'plans'                   => '456,789', // Apply to plans with IDs 456 and 789
+    'code'                    => 'SUMMER20',
+    'discount'                => 20,
+    'discount_type'           => 'percentage',
+    'start_date'              => '2024-06-01 00:00:00',
+    'end_date'                => '2024-09-30 23:59:59',
+    'redemptions_limit'       => 100,
+    'has_renewals_discount'   => false, // Apply discount only to the first payment
+    'has_addons_discount'     => true,
+    'is_one_per_user'         => true,
+    'is_active'               => true,
+]);
+
+// Check if the coupon creation was successful
+if (isset($response->id)) {
+    echo 'Coupon created successfully with ID: ' . $response->id;
+} else {
+    echo 'Error creating coupon.';
+}
+```
+
+**Parameters:**
+
+Refer to the "Response Structure" table above for a list of coupon properties and their descriptions.
+
+#### Updating Coupons
+
+To update coupon information, use the `api()` method with the `PUT` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/coupons/{coupon_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/coupons/456.json', 'PUT', [
+    'code'     => 'NEWYEAR25', // Update the coupon code
+    'discount' => 25,          // Update the discount amount
+]);
+
+// Check if the update was successful
+if (isset($response->id)) {
+    echo 'Coupon updated successfully!';
+} else {
+    echo 'Error updating coupon.';
+}
+```
+
+**Parameters:**
+
+Refer to the "Response Structure" table above for a list of coupon properties that can be updated.
+
+#### Deleting Coupons
+
+To delete a coupon, use the `api()` method with the `DELETE` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/coupons/{coupon_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/coupons/456.json', 'DELETE');
+
+// Check if the deletion was successful
+if ($response === '') { // Successful DELETE requests return an empty response
+    echo 'Coupon deleted successfully!';
+} else {
+    echo 'Error deleting coupon.';
+}
+```
+
+
+
+### 8. Working with Emails
+
+This section covers how to manage email templates and email addresses associated with your Freemius plugins using the SDK.
+
+#### Retrieving Email Templates
+
+Freemius provides various email templates for different events, such as user registration, subscription confirmation, payment receipts, and more. To retrieve the content of a specific email template, use the `api()` method with the `GET` HTTP method and the appropriate endpoint. This endpoint requires the `developer` scope.
+
+**Example: Retrieving the User Registration Email Template:**
+
+```php
+// Assuming $freemius is initialized with the 'developer' scope
+$emailTemplate = $freemius->api('/plugins/123/emails/user_register.json', 'GET');
+
+// Access email template properties
+echo 'Subject: ' . $emailTemplate->subject . '<br>';
+echo 'Plain Text Content: ' . $emailTemplate->plain . '<br>';
+echo 'HTML Content: ' . $emailTemplate->html . '<br>';
+```
+
+**Available Email Templates:**
+
+The following email templates are available:
+
+- `user_register`: User registration email.
+- `welcome`: Welcome email sent after user registration.
+- `subscription_confirm`: Subscription confirmation email.
+- `payment_receipt`: Payment receipt email.
+- `subscription_cancel`: Subscription cancellation email.
+- `refund_issued`: Refund issued email.
+
+**Response Structure:**
+
+The response from the email template endpoint will be a JSON object representing the email template. It has the following properties:
+
+| Property    | Description                                           |
+|-------------|-------------------------------------------------------|
+| `plugin_id` | The ID of the plugin associated with the template. |
+| `category`  | The category of the email template (e.g., 'user_register'). |
+| `subject`   | The subject line of the email.                      |
+| `plain`     | The plain text version of the email content.       |
+| `html`      | The HTML version of the email content.            |
+| `id`        | The unique ID of the email template.                |
+| `created`   | The date and time the template was created.        |
+| `updated`   | The date and time the template was last updated.     |
+
+#### Updating Email Templates
+
+To customize the content of an email template, use the `api()` method with the `PUT` HTTP method and the corresponding endpoint. This endpoint requires the `developer` scope.
+
+**Example: Updating the Subject of the User Registration Email:**
+
+```php
+$response = $freemius->api('/plugins/123/emails/user_register.json', 'PUT', [
+    'subject' => 'Welcome to My Awesome Plugin!',
+]);
+
+// Check if the update was successful
+if (isset($response->id)) {
+    echo 'Email template updated successfully!';
+} else {
+    echo 'Error updating email template.';
+}
+```
+
+**Parameters:**
+
+- `subject`: (Optional) The updated subject line of the email.
+- `plain`: (Optional) The updated plain text version of the email content.
+- `html`: (Optional) The updated HTML version of the email content.
+
+**Response:**
+
+If the update is successful, the response will contain the updated email template object.
+
+#### Managing Email Addresses
+
+Freemius allows you to configure various email addresses associated with your plugin, such as general contact, support, and personal email addresses. To manage these addresses, use the `api()` method with the `GET` (to retrieve) and `PUT` (to update) HTTP methods and the `/apps/{app_id}/developers/{developer_id}/plugins/{plugin_id}/emails/addresses.json` endpoint. This endpoint requires the `app` scope.
+
+**Example: Retrieving Email Addresses:**
+
+```php
+// Assuming $freemius is initialized with the 'app' scope
+$emailAddresses = $freemius->api('/developers/12345/plugins/678/emails/addresses.json', 'GET');
+
+// Access email address properties
+echo 'General Email: ' . $emailAddresses->general . '<br>';
+echo 'Support Email: ' . $emailAddresses->support . '<br>';
+echo 'Personal Email: ' . $emailAddresses->personal . '<br>';
+// ... other email address details
+```
+
+**Example: Updating Email Addresses:**
+
+```php
+$response = $freemius->api('/developers/12345/plugins/678/emails/addresses.json', 'PUT', [
+    'general'  => 'info@example.com',
+    'support'  => 'support@example.com',
+    'personal' => 'john.doe@example.com',
+    // ... other email addresses
+]);
+
+// Check if the update was successful
+if (isset($response->id)) {
+    echo 'Email addresses updated successfully!';
+} else {
+    echo 'Error updating email addresses.';
+}
+```
+
+**Available Email Addresses:**
+
+- `general`: General system email address.
+- `dont_reply`: "Do Not Reply" email address.
+- `personal`: Developer's personal assistance email address.
+- `personal_technical`: Technical support representative's email address.
+- `personal_setup`: Setup happiness representative's email address.
+- `support`: General support email address.
+
+**Response Structure:**
+
+The response from the email address endpoint will be a JSON object containing the email address configuration. It has the following properties:
+
+| Property                    | Description                                                                        |
+|----------------------------|------------------------------------------------------------------------------------|
+| `plugin_id`                | The ID of the plugin associated with the email addresses.                        |
+| `general`                  | The general system email address.                                                 |
+| `general_name`             | The name associated with the general email address.                               |
+| `dont_reply`               | The "Do Not Reply" email address.                                                |
+| `dont_reply_name`          | The name associated with the "Do Not Reply" email address.                        |
+| `personal`                 | The developer's personal assistance email address.                                |
+| `personal_name`            | The name associated with the personal email address.                              |
+| `personal_technical`       | The technical support representative's email address.                             |
+| `personal_technical_name`  | The name associated with the technical support email address.                      |
+| `personal_setup`           | The setup happiness representative's email address.                               |
+| `personal_setup_name`      | The name associated with the setup happiness email address.                       |
+| `support`                  | The general support email address.                                                 |
+| `support_name`             | The name associated with the support email address.                               |
+| `id`                       | The unique ID of the email address configuration.                                |
+| `created`                  | The date and time the email address configuration was created.                     |
+| `updated`                  | The date and time the email address configuration was last updated.                |
+
+
+
+
+### 9. Handling Events
+
+This section covers how to retrieve and understand events related to your Freemius plugins using the SDK. Freemius generates various events, such as new installations, upgrades, cancellations, and more. These events can be valuable for tracking plugin usage, understanding customer behavior, and triggering actions in your own applications.
+
+#### Retrieving Events
+
+To retrieve events associated with a specific plugin, use the `api()` method with the `GET` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/events.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+// Assuming $freemius is initialized with the 'developer' scope
+$events = $freemius->api('/plugins/123/events.json', 'GET');
+
+// Loop through the events
+foreach ($events->events as $event) {
+    echo 'Event ID: ' . $event->id . '<br>';
+    echo 'Event Type: ' . $event->type . '<br>';
+    echo 'User ID: ' . $event->user_id . '<br>';
+    echo 'Install ID: ' . $event->install_id . '<br>';
+    // ... other event details
+}
+```
+
+**Filtering Events:**
+
+You can filter the list of events using various parameters:
+
+**Example: Retrieving Events for a Specific User:**
+
+```php
+$events = $freemius->api('/plugins/123/events.json', 'GET', [
+    'user_id' => 456,
+]);
+
+// ... process the filtered events
+```
+
+**Example: Retrieving License Updated Events:**
+
+```php
+$events = $freemius->api('/plugins/123/events.json', 'GET', [
+    'type' => 'license.updated',
+]);
+
+// ... process the filtered events
+```
+
+**Available Filters:**
+
+- `user_id`: Filter by the ID of the user associated with the event.
+- `install_id`: Filter by the ID of the install associated with the event.
+- `type`: Filter by event type.
+
+**Important Note:**
+
+When filtering by both `user_id` and `install_id`, the endpoint will return events that match **both** criteria. Since each install is owned by a single user, if the provided `user_id` doesn't own the specified `install_id`, the response will be an empty collection.
+
+**Response Structure:**
+
+The response from the events endpoint will be a JSON object containing an `events` array. Each element in the `events` array represents an event and has the following properties:
+
+| Property        | Description                                                                                                                                                              |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`            | The unique ID of the event.                                                                                                                                             |
+| `type`          | The type of the event (e.g., `install.activated`, `license.updated`, `subscription.cancelled`).                                                                           |
+| `developer_id`  | The ID of the developer associated with the event.                                                                                                                      |
+| `plugin_id`     | The ID of the plugin associated with the event.                                                                                                                         |
+| `user_id`       | The ID of the user associated with the event (if applicable).                                                                                                           |
+| `install_id`    | The ID of the install associated with the event (if applicable).                                                                                                        |
+| `data`          | Additional data associated with the event, which varies depending on the event type.                                                                                   |
+| `event_trigger`| The trigger for the event (`user`, `developer`, or `system`).                                                                                                          |
+| `state`         | The processing state of the event (`pending` or `processed`).                                                                                                            |
+| `created`       | The date and time the event was created.                                                                                                                                 |
+| `updated`       | The date and time the event was last updated.                                                                                                                            |
+
+#### Understanding Event Types
+
+Freemius generates a wide range of events to provide insights into plugin activity. Here are some common event types:
+
+**Installation Events:**
+
+- `install.activated`: Triggered when a plugin is activated on a website.
+- `install.deactivated`: Triggered when a plugin is deactivated on a website.
+- `install.updated`: Triggered when install information is updated (e.g., plugin version, plan).
+- `install.uninstalled`: Triggered when a plugin is uninstalled from a website.
+
+**License Events:**
+
+- `license.created`: Triggered when a new license is created.
+- `license.updated`: Triggered when license information is updated (e.g., quota, expiration).
+- `license.cancelled`: Triggered when a license is cancelled.
+
+**Subscription Events:**
+
+- `subscription.created`: Triggered when a new subscription is created.
+- `subscription.updated`: Triggered when subscription information is updated (e.g., billing cycle, next payment date).
+- `subscription.cancelled`: Triggered when a subscription is cancelled.
+- `subscription.payment.succeeded`: Triggered when a subscription payment is successful.
+- `subscription.payment.failed`: Triggered when a subscription payment fails.
+
+**Other Events:**
+
+- `user.registered`: Triggered when a new user registers an account.
+- `user.updated`: Triggered when user information is updated.
+- `plugin.updated`: Triggered when plugin information is updated.
+- `plan.created`: Triggered when a new plan is created.
+- `plan.updated`: Triggered when plan information is updated.
+- `plan.deleted`: Triggered when a plan is deleted.
+
+**Important Note:**
+
+The `data` property of an event object contains additional information specific to the event type. Refer to the Freemius API documentation for details on the data structure for each event type.
+
+#### Retrying Webhooks
+
+Freemius can send webhooks to your application to notify you about events in real-time. If a webhook fails to be delivered, you can retry it using the `api()` method with the `PUT` HTTP method and the `/developers/{developer_id}/plugins/{plugin_id}/events/{event_id}.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+$response = $freemius->api('/plugins/123/events/456.json', 'PUT'); // Retry webhooks for event ID 456
+
+// Check if the retry was successful
+if ($response === '') { // Successful PUT requests return an empty response
+    echo 'Webhooks retried successfully!';
+} else {
+    echo 'Error retrying webhooks.';
+}
+```
+
+
+
+### 10. Global Search
+
+This section covers how to use the global search functionality to find various entities in Freemius, such as users, installs, payments, and more. 
+
+#### Searching for Entities
+
+To perform a global search, use the `api()` method with the `GET` HTTP method and the `/developers/{developer_id}/search.json` endpoint. This endpoint requires the `developer` scope.
+
+**Example:**
+
+```php
+// Assuming $freemius is initialized with the 'developer' scope
+$searchResults = $freemius->api('/search.json', 'GET', [
+    'query' => 'john.doe@example.com', // Search for a user with this email address
+]);
+
+// Process the search results
+echo 'Users:<br>';
+foreach ($searchResults->users as $user) {
+    echo '- ' . $user->email . '<br>';
+}
+
+echo 'Installs:<br>';
+foreach ($searchResults->installs as $install) {
+    echo '- ' . $install->url . '<br>';
+}
+
+// ... process other search result categories
+```
+
+**Search Query:**
+
+The `query` parameter is used to specify the search term. You can search for entities by:
+
+- ID (user ID, install ID, payment ID, etc.)
+- Email address
+- Site URL
+- User name
+
+**Response Structure:**
+
+The response from the search endpoint will be a JSON object containing multiple categories of search results. Each category will be an array of entities matching the search query. The categories include:
+
+- `users`: An array of user objects matching the search query.
+- `installs`: An array of install objects matching the search query.
+- `payments`: An array of payment objects matching the search query.
+
+**Important Note:**
+
+The structure and availability of specific categories in the search results might vary depending on the Freemius API version and your account permissions.
+
+
+
+
+### 11. Error Handling
+
+This section covers how to handle errors and exceptions thrown by the Freemius PHP SDK. Proper error handling is crucial for building robust and reliable applications that can gracefully recover from unexpected situations.
+
+#### Understanding Exceptions
+
+The Freemius PHP SDK uses exceptions to signal errors during API interactions. The SDK throws exceptions for various reasons, such as:
+
+- **Invalid API Credentials:**  If you provide incorrect API credentials (developer ID, public key, or secret key), the SDK will throw an `ApiException`.
+- **Invalid API Scope:** If you attempt to perform an action that requires a different API scope than the one you initialized the SDK with, an `ApiException` will be thrown.
+- **API Errors:** If the Freemius API returns an error response (e.g., due to a bad request, unauthorized access, or a server error), the SDK will throw an `ApiException`.
+- **Invalid Arguments:** If you provide invalid arguments to SDK methods, an `InvalidArgumentException` will be thrown.
+- **Network Errors:** If there are network connectivity issues preventing the SDK from communicating with the Freemius API, a `GuzzleHttp\Exception\ConnectException` (or a similar Guzzle exception) will be thrown.
+
+#### Handling API Errors
+
+To handle exceptions thrown by the SDK, use a `try...catch` block. You can catch the generic `ApiException` to handle all Freemius API errors or catch specific exception types for more granular error handling.
+
+**Example: Catching All API Errors:**
+
+```php
+try {
+    // Make an API request
+    $response = $freemius->api('/plugins/123.json', 'GET');
+
+    // Process the response
+    // ...
+} catch (ApiException $e) {
+    // Handle the API error
+    echo 'API Error: ' . $e->getMessage();
+
+    // Log the error
+    error_log($e->getMessage());
+
+    // Take appropriate actions (e.g., display an error message to the user)
+}
+```
+
+**Example: Catching Specific Exception Types:**
+
+```php
+try {
+    // Make an API request
+    $response = $freemius->api('/plugins/123.json', 'GET');
+
+    // Process the response
+    // ...
+} catch (InvalidArgumentException $e) {
+    // Handle invalid argument errors
+    echo 'Invalid Argument: ' . $e->getMessage();
+} catch (GuzzleHttp\Exception\ConnectException $e) {
+    // Handle network connectivity errors
+    echo 'Network Error: Could not connect to the Freemius API.';
+} catch (ApiException $e) {
+    // Handle other API errors
+    echo 'API Error: ' . $e->getMessage();
+}
+```
+
+**Error Codes:**
+
+The `ApiException` class provides access to the error code returned by the Freemius API. You can use this code to identify the specific error and take appropriate actions.
+
+**Example: Checking the Error Code:**
+
+```php
+catch (ApiException $e) {
+    echo 'API Error (' . $e->getCode() . '): ' . $e->getMessage();
+
+    // Take actions based on the error code
+    if ($e->getCode() === 401) { // Unauthorized
+        // ... handle unauthorized access
+    } elseif ($e->getCode() === 404) { // Not Found
+        // ... handle resource not found error
+    } else {
+        // ... handle other error codes
+    }
+}
+```
+
+**Best Practices:**
+
+- **Log Errors:** Always log API errors for debugging and troubleshooting purposes.
+- **Handle Errors Gracefully:** Provide informative error messages to the user and avoid exposing sensitive information.
+- **Retry Requests:** For transient errors (e.g., network issues), consider implementing a retry mechanism.
+- **Use Specific Exception Types:** Catch specific exception types to handle different error scenarios appropriately.
+
+
