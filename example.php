@@ -4,18 +4,13 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Freemius\SDK\Api\FreemiusApi;
 
-
-define( 'FS__API_SCOPE', 'developer' );
-define( 'FS__API_DEV_ID', 12345 );
-define( 'FS__API_PUBLIC_KEY', 'pk_test' );
-define( 'FS__API_SECRET_KEY', 'sk_test' );
 // https://guardiv.test
 
 // Replace with your actual Freemius API credentials
 $scope        = 'developer';
-$developerId  = 12345;
-$publicKey    = 'pk_your_public_key';
-$secretKey    = 'sk_your_secret_key';
+$developerId  = 17789;
+$publicKey    = 'pk_e9f68da8dc036c0085723313b9e2d';
+$secretKey    = 'sk_6SWIE]0xiZ6RHc]QaQ;)A(hpf1-*x';
 $sandbox      = true; // Set to false for production
 
 $api = new FreemiusApi($scope, $developerId, $publicKey, $secretKey, $sandbox);

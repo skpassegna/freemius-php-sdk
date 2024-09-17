@@ -15,6 +15,7 @@ class UsersEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $baseUrl;
 
     /**
      * UsersEndpoint constructor.
@@ -22,15 +23,18 @@ class UsersEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $baseUrl      The base URL for API requests.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $baseUrl
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->baseUrl      = $baseUrl;
     }
 
     /**
@@ -203,10 +207,11 @@ class UsersEndpoint
      * @return string The CSV content.
      * @throws ApiException If the API request fails.
      */
-    public function downloadUsersCSV(int $pluginId, array $params = []): string|array
+    public function downloadUsersCSV(int $pluginId, array $params = []): string
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users.csv',
+            '%s/developers/%d/plugins/%d/users.csv',
+            $this->baseUrl,
             $this->developerId,
             $pluginId
         );
@@ -217,6 +222,6 @@ class UsersEndpoint
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
-        return $response;
+        return $response['content'] ?? '';
     }
 }

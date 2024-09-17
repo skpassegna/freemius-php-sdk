@@ -15,6 +15,7 @@ class InstallsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $baseUrl;
 
     /**
      * InstallsEndpoint constructor.
@@ -22,15 +23,18 @@ class InstallsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $baseUrl      The base URL for API requests.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $baseUrl
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->baseUrl      = $baseUrl;
     }
 
     /**
@@ -432,10 +436,11 @@ class InstallsEndpoint
      * @return string The plugin zip file content.
      * @throws ApiException If the API request fails.
      */
-    public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string|array
+    public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/updates/%d.zip',
+            '%s/developers/%d/plugins/%d/installs/%d/updates/%d.zip',
+            $this->baseUrl,
             $this->developerId,
             $pluginId,
             $installId,
@@ -448,33 +453,6 @@ class InstallsEndpoint
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
-        return $response;
-    }
-
-    /**
-     * Send a confirmation email for an install's user ownership change.
-     *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param int   $userId    The user ID.
-     * @param array $data      The ownership change data.
-     *
-     * @throws ApiException If the API request fails.
-     */
-    public function sendOwnershipChangeConfirmation(int $pluginId, int $installId, int $userId, array $data): void
-    {
-        $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/users/%d/ownership-change.json',
-            $this->developerId,
-            $pluginId,
-            $installId,
-            $userId
-        );
-
-        $this->httpClient->put(
-            $url,
-            $data,
-            $this->authenticator->getAuthHeaders('PUT', $url, $data)
-        );
+        return $response['content'] ?? '';
     }
 }
