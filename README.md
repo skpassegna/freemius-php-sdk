@@ -1,41 +1,247 @@
-# Freemius PHP SDK
-_Under quick refatoring and editing :-)_
-This is an unofficial PHP SDK for seamless integration with the Freemius platform. It provides a convenient way to interact with the Freemius API, enabling you to manage licenses, subscriptions, user accounts, and more.
+## Freemius PHP SDK - Unofficial but Refactored and Modernized
 
-## Motivation
+> Still under heavy dev :smiley:
 
-This project was initiated by Samuel due to challenges encountered with the official Freemius PHP SDK. The main motivations for creating this unofficial SDK are:
 
-- **Composer Autoloading Issues:** The official SDK, after installation, was not easily manageable by Composer's autoloading mechanism. This SDK aims to resolve that by adhering to PSR-4 autoloading standards.
-- **Lack of Clear Documentation:** The official SDK's documentation was not structured in a task-oriented or concept-oriented manner, making it difficult to find specific information and understand how to use the SDK effectively. This SDK will strive to provide clear, well-organized documentation that focuses on common use cases and concepts.
-- **Lack of Maintenance:** The official SDK appears to be unmaintained, with the last commit being 2 years ago and the initial commit 9 years ago. This SDK will be actively maintained to ensure compatibility with the latest PHP versions and Freemius API changes.
+This is an unofficial, fully refactored, and modernized Freemius PHP SDK designed for seamless integration with the Freemius platform. It adheres to SOLID principles, leverages PHP 8+ features, and provides a clean, object-oriented interface for interacting with the Freemius API.
 
-## Features
+### Installation
 
-- **PHP 8.2 Compatibility:** This SDK is designed and tested for compatibility with PHP 8.2, ensuring you can leverage the latest language features and performance improvements.
-- **PSR-4 Autoloading:** The SDK adheres to PSR-4 autoloading standards, making it easy to integrate into your projects using Composer.
-- **Guzzle Integration:** The SDK utilizes the powerful Guzzle HTTP client for making API requests, providing a modern and efficient way to interact with the Freemius API.
-- **Enhanced Security:** The SDK removes the insecure practice of disabling SSL verification, ensuring secure communication with the Freemius API.
-- **Comprehensive Error Handling:** The SDK includes a robust exception handling system, providing clear and informative error messages to help you diagnose and resolve issues quickly.
-- **Extensive Unit Tests:** The SDK is thoroughly tested with a comprehensive suite of unit tests, ensuring its reliability and stability.
-- **Task-Oriented Documentation:** The SDK will be accompanied by clear and well-organized documentation that focuses on common tasks and concepts, making it easy to learn and use.
+Install the SDK via Composer:
 
-## Installation
-
-Install the SDK using Composer:
-
-```
-composer require skpassegna/freemius-php-sdk
+```bash
+composer 
 ```
 
-## Usage
+### Usage
 
-[Detailed usage instructions and examples are provided in the documentation.](https://github.com/skpassegna/freemius-php-sdk/#)
+#### 1. Initialize the Freemius API Client
 
-## Contributing
+```php
+use Freemius\SDK\Api\FreemiusApi;
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on GitHub.
+// Replace with your actual Freemius API credentials
+$scope        = 'developer'; // 'developer', 'app', 'user', 'install'
+$developerId  = 12345;
+$publicKey    = 'pk_your_public_key';
+$secretKey    = 'sk_your_secret_key';
+$sandbox      = true; // Set to false for production
 
-## License
+$api = new FreemiusApi($scope, $developerId, $publicKey, $secretKey, $sandbox);
+```
 
-This SDK is licensed under the GPL-2.0+ license. 
+#### 2. Access API Endpoints
+
+The `FreemiusApi` object provides access to various API endpoints, each representing a specific resource:
+
+```php
+// Access the Plugins endpoint
+$pluginsEndpoint = $api->plugins();
+
+// Access the Users endpoint
+$usersEndpoint = $api->users();
+
+// Access the Installs endpoint
+$installsEndpoint = $api->installs();
+
+// Access the Plans endpoint
+$plansEndpoint = $api->plans();
+
+// Access the Features endpoint
+$featuresEndpoint = $api->features();
+
+// Access the Licenses endpoint
+$licensesEndpoint = $api->licenses();
+
+// Access the Subscriptions endpoint
+$subscriptionsEndpoint = $api->subscriptions();
+
+// Access the Payments endpoint
+$paymentsEndpoint = $api->payments();
+
+// Access the Coupons endpoint
+$couponsEndpoint = $api->coupons();
+
+// Access the Emails endpoint
+$emailsEndpoint = $api->emails();
+
+// Access the Events endpoint
+$eventsEndpoint = $api->events();
+```
+
+#### 3. Perform API Operations
+
+Each endpoint provides methods for performing various operations on its corresponding resource. Here are some examples:
+
+**Plugins:**
+
+- **Get a list of plugins for the developer:**
+  ```php
+  $plugins = $api->plugins()->getPlugins();
+  ```
+
+- **Get a specific plugin:**
+  ```php
+  $plugin = $api->plugins()->getPlugin(123);
+  ```
+
+- **Create a new plugin:**
+  ```php
+  $newPluginData = [
+      'title' => 'My New Plugin',
+      // ... other plugin data
+  ];
+  $newPlugin = $api->plugins()->createPlugin($newPluginData);
+  ```
+
+**Users:**
+
+- **Get a list of users for a plugin:**
+  ```php
+  $users = $api->users()->getUsers(123);
+  ```
+
+- **Get a specific user:**
+  ```php
+  $user = $api->users()->getUser(123, 456);
+  ```
+
+- **Download a CSV file of users for a plugin:**
+  ```php
+  $csvContent = $api->users()->downloadUsersCSV(123);
+  ```
+
+**Installs:**
+
+- **Get a list of installs for a plugin:**
+  ```php
+  $installs = $api->installs()->getInstalls(123);
+  ```
+
+- **Get a specific install:**
+  ```php
+  $install = $api->installs()->getInstall(123, 456);
+  ```
+
+- **Download a specific plugin version for an install:**
+  ```php
+  $zipContent = $api->installs()->downloadVersion(123, 456, 789);
+  ```
+
+**Plans:**
+
+- **Get a list of plans for a plugin:**
+  ```php
+  $plans = $api->plans()->getPlans(123);
+  ```
+
+- **Get a specific plan:**
+  ```php
+  $plan = $api->plans()->getPlan(123, 456);
+  ```
+
+**Features:**
+
+- **Get a list of features for a plugin:**
+  ```php
+  $features = $api->features()->getFeatures(123);
+  ```
+
+- **Get a specific feature:**
+  ```php
+  $feature = $api->features()->getFeature(123, 456);
+  ```
+
+**Licenses:**
+
+- **Get a list of licenses for a plugin:**
+  ```php
+  $licenses = $api->licenses()->getLicenses(123);
+  ```
+
+- **Get a specific license:**
+  ```php
+  $license = $api->licenses()->getLicense(123, 456);
+  ```
+
+**Subscriptions:**
+
+- **Get a list of subscriptions for a plugin:**
+  ```php
+  $subscriptions = $api->subscriptions()->getSubscriptions(123);
+  ```
+
+- **Get a specific subscription:**
+  ```php
+  $subscription = $api->subscriptions()->getSubscription(123, 456);
+  ```
+
+**Payments:**
+
+- **Get a list of payments for a plugin:**
+  ```php
+  $payments = $api->payments()->getPayments(123);
+  ```
+
+- **Get a specific payment:**
+  ```php
+  $payment = $api->payments()->getPayment(123, 456);
+  ```
+
+**Coupons:**
+
+- **Get a list of coupons for a plugin:**
+  ```php
+  $coupons = $api->coupons()->getCoupons(123);
+  ```
+
+- **Get a specific coupon:**
+  ```php
+  $coupon = $api->coupons()->getCoupon(123, 456);
+  ```
+
+**Emails:**
+
+- **Get a list of email templates for a plugin:**
+  ```php
+  $emailTemplates = $api->emails()->getEmailTemplates(123);
+  ```
+
+- **Get a specific email template:**
+  ```php
+  $emailTemplate = $api->emails()->getEmailTemplate(123, 'after_purchase');
+  ```
+
+**Events:**
+
+- **Get a list of events for a plugin:**
+  ```php
+  $events = $api->events()->getEvents(123);
+  ```
+
+- **Get a specific event:**
+  ```php
+  $event = $api->events()->getEvent(123, 456);
+  ```
+
+#### 4. Error Handling
+
+All API operations can potentially throw an `ApiException` if the request fails. Handle these exceptions gracefully:
+
+```php
+try {
+    // Perform API operation
+} catch (ApiException $e) {
+    // Handle API error
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+    // You can access the API response using $e->getResponse()
+}
+```
+
+### Contributing
+
+Contributions are welcome! Feel free to open issues and pull requests on the GitHub repository: [https://github.com/skpassegna/freemius-php-sdk](https://github.com/skpassegna/freemius-php-sdk)
+
+### License
+
+This SDK is licensed under the GPL-2.0+ license. See the LICENSE file for more details.

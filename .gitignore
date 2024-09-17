@@ -3,3 +3,4 @@
 /vendor
 /tests/_output
 /tests/coverage
+example.php
