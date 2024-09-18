@@ -20,10 +20,10 @@ class UsersEndpoint
     /**
      * UsersEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class UsersEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of users for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
      *
      * @return User[] An array of User entities.
      * @throws ApiException If the API request fails.
@@ -87,9 +87,9 @@ class UsersEndpoint
     /**
      * Retrieve a specific user.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $userId   The user ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $userId The user ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return User The User entity.
      * @throws ApiException If the API request fails.
@@ -127,8 +127,8 @@ class UsersEndpoint
     /**
      * Create a new user.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $data     The user data.
+     * @param int $pluginId The plugin ID.
+     * @param array $data The user data.
      *
      * @return User The created User entity.
      * @throws ApiException If the API request fails.
@@ -165,9 +165,9 @@ class UsersEndpoint
     /**
      * Update an existing user.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $userId   The user ID.
-     * @param array $data     The user data to update.
+     * @param int $pluginId The plugin ID.
+     * @param int $userId The user ID.
+     * @param array $data The user data to update.
      *
      * @return User The updated User entity.
      * @throws ApiException If the API request fails.
@@ -205,8 +205,8 @@ class UsersEndpoint
     /**
      * Download a CSV file of users for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
      *
      * @return string The CSV content.
      * @throws ApiException If the API request fails.
@@ -226,6 +226,6 @@ class UsersEndpoint
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
-        return $response['content'] ?? '';
+        return $response;
     }
 }

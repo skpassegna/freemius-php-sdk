@@ -20,10 +20,10 @@ class PluginsEndpoint
     /**
      * PluginsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId  The Freemius developer ID.
+     * @param string $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,10 +31,10 @@ class PluginsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
@@ -68,8 +68,6 @@ class PluginsEndpoint
                 $pluginData['public_key'],
                 $pluginData['secret_key'],
                 $pluginData['default_plan_id'] ?? null,
-                $pluginData['plans'] ?? null,
-                $pluginData['features'] ?? null,
                 $pluginData['money_back_period'] ?? null,
                 $pluginData['created'],
                 $pluginData['updated'] ?? null
@@ -82,8 +80,8 @@ class PluginsEndpoint
     /**
      * Retrieve a specific plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Plugin The Plugin entity.
      * @throws ApiException If the API request fails.
@@ -110,8 +108,6 @@ class PluginsEndpoint
             $response['public_key'],
             $response['secret_key'],
             $response['default_plan_id'] ?? null,
-            $response['plans'] ?? null,
-            $response['features'] ?? null,
             $response['money_back_period'] ?? null,
             $response['created'],
             $response['updated'] ?? null
@@ -143,8 +139,6 @@ class PluginsEndpoint
             $response['public_key'],
             $response['secret_key'],
             $response['default_plan_id'] ?? null,
-            $response['plans'] ?? null,
-            $response['features'] ?? null,
             $response['money_back_period'] ?? null,
             $response['created'],
             $response['updated'] ?? null
@@ -154,8 +148,8 @@ class PluginsEndpoint
     /**
      * Update an existing plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $data     The plugin data to update.
+     * @param int $pluginId The plugin ID.
+     * @param array $data The plugin data to update.
      *
      * @return Plugin The updated Plugin entity.
      * @throws ApiException If the API request fails.
@@ -182,8 +176,6 @@ class PluginsEndpoint
             $response['public_key'],
             $response['secret_key'],
             $response['default_plan_id'] ?? null,
-            $response['plans'] ?? null,
-            $response['features'] ?? null,
             $response['money_back_period'] ?? null,
             $response['created'],
             $response['updated'] ?? null
@@ -245,7 +237,7 @@ class PluginsEndpoint
     /**
      * Retrieve a plugin's status.
      *
-     * @param int   $pluginId The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param bool $isUpdate Whether to check for updates.
      *
      * @return array An array containing the plugin's status information.
@@ -272,9 +264,9 @@ class PluginsEndpoint
     /**
      * Retrieve a plugin's statistics.
      *
-     * @param int    $pluginId The plugin ID.
-     * @param string $start    Optional start date (YYYY-mm-DD HH:MM:SS).
-     * @param string $end      Optional end date (YYYY-mm-DD HH:MM:SS).
+     * @param int $pluginId The plugin ID.
+     * @param string|null $start Optional start date (YYYY-mm-DD HH:MM:SS).
+     * @param string|null $end Optional end date (YYYY-mm-DD HH:MM:SS).
      *
      * @return array An array containing the plugin's statistics.
      * @throws ApiException If the API request fails.
@@ -334,10 +326,10 @@ class PluginsEndpoint
     /**
      * Retrieve a plugin's revenues.
      *
-     * @param int    $pluginId  The plugin ID.
-     * @param string $from      The start date (YYYY-MM-DD HH:MM:SS).
-     * @param string $to        The end date (YYYY-MM-DD HH:MM:SS).
-     * @param string $interval  The aggregation interval ('day', 'week', 'month').
+     * @param int $pluginId The plugin ID.
+     * @param string $from The start date (YYYY-MM-DD HH:MM:SS).
+     * @param string $to The end date (YYYY-MM-DD HH:MM:SS).
+     * @param string $interval The aggregation interval ('day', 'week', 'month').
      *
      * @return array An array containing the plugin's revenues data.
      * @throws ApiException If the API request fails.
@@ -354,8 +346,8 @@ class PluginsEndpoint
         $response = $this->httpClient->get(
             $url,
             [
-                'from'     => $from,
-                'to'       => $to,
+                'from' => $from,
+                'to' => $to,
                 'interval' => $interval,
             ],
             $this->authenticator->getAuthHeaders('GET', $url)
@@ -367,10 +359,10 @@ class PluginsEndpoint
     /**
      * Retrieve a plugin's licenses activity.
      *
-     * @param int    $pluginId  The plugin ID.
-     * @param string $from      The start date (YYYY-MM-DD HH:MM:SS).
-     * @param string $to        The end date (YYYY-MM-DD HH:MM:SS).
-     * @param string $interval  The aggregation interval ('day', 'week', 'month').
+     * @param int $pluginId The plugin ID.
+     * @param string $from The start date (YYYY-MM-DD HH:MM:SS).
+     * @param string $to The end date (YYYY-MM-DD HH:MM:SS).
+     * @param string $interval The aggregation interval ('day', 'week', 'month').
      *
      * @return array An array containing the plugin's licenses activity data.
      * @throws ApiException If the API request fails.
@@ -387,8 +379,8 @@ class PluginsEndpoint
         $response = $this->httpClient->get(
             $url,
             [
-                'from'     => $from,
-                'to'       => $to,
+                'from' => $from,
+                'to' => $to,
                 'interval' => $interval,
             ],
             $this->authenticator->getAuthHeaders('GET', $url)

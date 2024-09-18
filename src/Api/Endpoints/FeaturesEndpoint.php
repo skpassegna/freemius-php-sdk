@@ -31,10 +31,10 @@ class FeaturesEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**

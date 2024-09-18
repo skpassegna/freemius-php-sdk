@@ -20,10 +20,10 @@ class LicensesEndpoint
     /**
      * LicensesEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class LicensesEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of licenses for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'fields', 'filter', 'search', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields', 'filter', 'search', 'count').
      *
      * @return License[] An array of License entities.
      * @throws ApiException If the API request fails.
@@ -75,8 +75,8 @@ class LicensesEndpoint
                 $licenseData['pricing_id'],
                 $licenseData['quota'],
                 $licenseData['activated'],
-                $licenseData['activated_local'],
-                $licenseData['expiration'],
+                $licenseData['activated_local'] ?? null,
+                $licenseData['expiration'] ?? null,
                 $licenseData['is_free_localhost'],
                 $licenseData['is_block_features'],
                 $licenseData['is_cancelled'],
@@ -91,9 +91,9 @@ class LicensesEndpoint
     /**
      * Retrieve a specific license.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $licenseId The license ID.
-     * @param array $params    Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $licenseId The license ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return License The License entity.
      * @throws ApiException If the API request fails.
@@ -122,8 +122,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],
@@ -135,9 +135,9 @@ class LicensesEndpoint
     /**
      * Update an existing license.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $licenseId The license ID.
-     * @param array $data      The license data to update.
+     * @param int $pluginId The plugin ID.
+     * @param int $licenseId The license ID.
+     * @param array $data The license data to update.
      *
      * @return License The updated License entity.
      * @throws ApiException If the API request fails.
@@ -166,8 +166,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],
@@ -179,9 +179,9 @@ class LicensesEndpoint
     /**
      * Delete (cancel) a license.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $licenseId The license ID.
-     * @param array $params    Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $licenseId The license ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return License The deleted License entity.
      * @throws ApiException If the API request fails.
@@ -209,8 +209,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],
@@ -222,8 +222,8 @@ class LicensesEndpoint
     /**
      * Deactivate a license from all installs.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $licenseId The license ID.
+     * @param int $pluginId The plugin ID.
+     * @param int $licenseId The license ID.
      *
      * @return License The updated License entity.
      * @throws ApiException If the API request fails.
@@ -251,8 +251,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],
@@ -264,7 +264,7 @@ class LicensesEndpoint
     /**
      * Activate a license for an install.
      *
-     * @param int $pluginId  The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
      * @param int $licenseId The license ID.
      *
@@ -296,8 +296,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],
@@ -309,7 +309,7 @@ class LicensesEndpoint
     /**
      * Deactivate a license from an install.
      *
-     * @param int $pluginId  The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
      * @param int $licenseId The license ID.
      *
@@ -340,8 +340,8 @@ class LicensesEndpoint
             $response['pricing_id'],
             $response['quota'],
             $response['activated'],
-            $response['activated_local'],
-            $response['expiration'],
+            $response['activated_local'] ?? null,
+            $response['expiration'] ?? null,
             $response['is_free_localhost'],
             $response['is_block_features'],
             $response['is_cancelled'],

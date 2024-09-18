@@ -20,10 +20,10 @@ class PaymentsEndpoint
     /**
      * PaymentsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class PaymentsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of payments for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'user_id', 'license_id', 'subscription_id', 'status', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'user_id', 'license_id', 'subscription_id', 'status', 'fields', 'count').
      *
      * @return Payment[] An array of Payment entities.
      * @throws ApiException If the API request fails.
@@ -90,9 +90,9 @@ class PaymentsEndpoint
     /**
      * Retrieve a specific payment.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $paymentId The payment ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $paymentId The payment ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Payment The Payment entity.
      * @throws ApiException If the API request fails.
@@ -133,9 +133,9 @@ class PaymentsEndpoint
     /**
      * Refund a payment.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $paymentId The payment ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $paymentId The payment ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Payment The refunded Payment entity.
      * @throws ApiException If the API request fails.

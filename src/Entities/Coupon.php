@@ -44,27 +44,27 @@ class Coupon
         string $code,
         int $discount,
         string $type,
-        ?int $plan_id = null,
-        ?int $pricing_id = null,
-        int $redemptions = 0,
-        ?int $max_redemptions = null,
-        ?string $expiry = null,
-        string $status = 'active',
+        ?int $plan_id,
+        ?int $pricing_id,
+        int $redemptions,
+        ?int $max_redemptions,
+        ?string $expiry,
+        string $status,
         string $created,
         string $updated
     ) {
-        $this->id             = $id;
-        $this->plugin_id       = $plugin_id;
-        $this->code           = $code;
-        $this->discount       = $discount;
-        $this->type           = $type;
-        $this->plan_id         = $plan_id;
-        $this->pricing_id       = $pricing_id;
-        $this->redemptions    = $redemptions;
+        $this->id = $id;
+        $this->plugin_id = $plugin_id;
+        $this->code = $code;
+        $this->discount = $discount;
+        $this->type = $type;
+        $this->plan_id = $plan_id;
+        $this->pricing_id = $pricing_id;
+        $this->redemptions = $redemptions;
         $this->max_redemptions = $max_redemptions;
-        $this->expiry         = $expiry;
-        $this->status         = $status;
-        $this->created        = $created;
-        $this->updated        = $updated;
+        $this->expiry = $expiry;
+        $this->status = $status;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

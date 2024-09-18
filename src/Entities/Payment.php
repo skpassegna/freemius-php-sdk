@@ -53,18 +53,18 @@ class Payment
         string $created,
         string $updated
     ) {
-        $this->id             = $id;
-        $this->user_id         = $user_id;
-        $this->license_id      = $license_id;
+        $this->id = $id;
+        $this->user_id = $user_id;
+        $this->license_id = $license_id;
         $this->subscription_id = $subscription_id;
-        $this->plan_id         = $plan_id;
-        $this->pricing_id       = $pricing_id;
-        $this->gross          = $gross;
-        $this->currency       = $currency;
-        $this->gateway        = $gateway;
-        $this->transaction_id  = $transaction_id;
-        $this->status         = $status;
-        $this->created        = $created;
-        $this->updated        = $updated;
+        $this->plan_id = $plan_id;
+        $this->pricing_id = $pricing_id;
+        $this->gross = $gross;
+        $this->currency = $currency;
+        $this->gateway = $gateway;
+        $this->transaction_id = $transaction_id;
+        $this->status = $status;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

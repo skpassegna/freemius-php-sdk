@@ -48,27 +48,27 @@ class License
         int $pricing_id,
         int $quota,
         string $activated,
-        ?string $activated_local = null,
-        ?string $expiration = null,
-        bool $is_free_localhost = false,
-        bool $is_block_features = false,
-        bool $is_cancelled = false,
+        ?string $activated_local,
+        ?string $expiration,
+        bool $is_free_localhost,
+        bool $is_block_features,
+        bool $is_cancelled,
         string $created,
         string $updated
     ) {
-        $this->id              = $id;
-        $this->plugin_id        = $plugin_id;
-        $this->user_id          = $user_id;
-        $this->plan_id          = $plan_id;
-        $this->pricing_id        = $pricing_id;
-        $this->quota           = $quota;
-        $this->activated       = $activated;
-        $this->activated_local  = $activated_local;
-        $this->expiration      = $expiration;
+        $this->id = $id;
+        $this->plugin_id = $plugin_id;
+        $this->user_id = $user_id;
+        $this->plan_id = $plan_id;
+        $this->pricing_id = $pricing_id;
+        $this->quota = $quota;
+        $this->activated = $activated;
+        $this->activated_local = $activated_local;
+        $this->expiration = $expiration;
         $this->is_free_localhost = $is_free_localhost;
-        $this->is_block_features  = $is_block_features;
-        $this->is_cancelled      = $is_cancelled;
-        $this->created         = $created;
-        $this->updated         = $updated;
+        $this->is_block_features = $is_block_features;
+        $this->is_cancelled = $is_cancelled;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

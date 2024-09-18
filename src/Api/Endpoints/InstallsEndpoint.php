@@ -324,6 +324,7 @@ class InstallsEndpoint
      */
     public function getUninstallDetails(int $pluginId, int $installId, array $params = []): array
     {
+        // This endpoint doesn't include the scope or developer ID in the URL
         $url = sprintf(
             '/v1/plugins/%d/installs/%d/uninstall.json',
             $pluginId,
@@ -460,7 +461,7 @@ class InstallsEndpoint
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
-        return $response['content'] ?? '';
+        return $response;
     }
 
     /**

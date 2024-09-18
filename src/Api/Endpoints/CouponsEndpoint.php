@@ -20,10 +20,10 @@ class CouponsEndpoint
     /**
      * CouponsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class CouponsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of coupons for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'code', 'plan_id', 'pricing_id', 'status', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'code', 'plan_id', 'pricing_id', 'status', 'fields', 'count').
      *
      * @return Coupon[] An array of Coupon entities.
      * @throws ApiException If the API request fails.
@@ -77,7 +77,7 @@ class CouponsEndpoint
                 $couponData['pricing_id'] ?? null,
                 $couponData['redemptions'],
                 $couponData['max_redemptions'] ?? null,
-                $couponData['expiry'],
+                $couponData['expiry'] ?? null,
                 $couponData['status'],
                 $couponData['created'],
                 $couponData['updated']
@@ -90,9 +90,9 @@ class CouponsEndpoint
     /**
      * Retrieve a specific coupon.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $couponId The coupon ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $couponId The coupon ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Coupon The Coupon entity.
      * @throws ApiException If the API request fails.
@@ -123,7 +123,7 @@ class CouponsEndpoint
             $response['pricing_id'] ?? null,
             $response['redemptions'],
             $response['max_redemptions'] ?? null,
-            $response['expiry'],
+            $response['expiry'] ?? null,
             $response['status'],
             $response['created'],
             $response['updated']
@@ -133,8 +133,8 @@ class CouponsEndpoint
     /**
      * Create a new coupon.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $data     The coupon data.
+     * @param int $pluginId The plugin ID.
+     * @param array $data The coupon data.
      *
      * @return Coupon The created Coupon entity.
      * @throws ApiException If the API request fails.
@@ -164,7 +164,7 @@ class CouponsEndpoint
             $response['pricing_id'] ?? null,
             $response['redemptions'],
             $response['max_redemptions'] ?? null,
-            $response['expiry'],
+            $response['expiry'] ?? null,
             $response['status'],
             $response['created'],
             $response['updated']
@@ -174,9 +174,9 @@ class CouponsEndpoint
     /**
      * Update an existing coupon.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $couponId The coupon ID.
-     * @param array $data     The coupon data to update.
+     * @param int $pluginId The plugin ID.
+     * @param int $couponId The coupon ID.
+     * @param array $data The coupon data to update.
      *
      * @return Coupon The updated Coupon entity.
      * @throws ApiException If the API request fails.
@@ -207,7 +207,7 @@ class CouponsEndpoint
             $response['pricing_id'] ?? null,
             $response['redemptions'],
             $response['max_redemptions'] ?? null,
-            $response['expiry'],
+            $response['expiry'] ?? null,
             $response['status'],
             $response['created'],
             $response['updated']

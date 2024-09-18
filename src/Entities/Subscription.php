@@ -40,19 +40,19 @@ class Subscription
         string $status,
         string $billing_cycle,
         string $payment_method,
-        ?string $next_payment = null,
+        ?string $next_payment,
         string $created,
         string $updated
     ) {
-        $this->id            = $id;
-        $this->user_id        = $user_id;
-        $this->plan_id        = $plan_id;
-        $this->license_id     = $license_id;
-        $this->status        = $status;
-        $this->billing_cycle  = $billing_cycle;
+        $this->id = $id;
+        $this->user_id = $user_id;
+        $this->plan_id = $plan_id;
+        $this->license_id = $license_id;
+        $this->status = $status;
+        $this->billing_cycle = $billing_cycle;
         $this->payment_method = $payment_method;
-        $this->next_payment   = $next_payment;
-        $this->created       = $created;
-        $this->updated       = $updated;
+        $this->next_payment = $next_payment;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

@@ -40,19 +40,19 @@ class User
         string $public_key,
         string $secret_key,
         bool $is_verified,
-        ?string $picture = null,
+        ?string $picture,
         string $created,
-        ?string $updated = null
+        ?string $updated
     ) {
-        $this->id         = $id;
-        $this->email      = $email;
-        $this->first  = $first;
-        $this->last   = $last;
-        $this->public_key  = $public_key;
-        $this->secret_key  = $secret_key;
+        $this->id = $id;
+        $this->email = $email;
+        $this->first = $first;
+        $this->last = $last;
+        $this->public_key = $public_key;
+        $this->secret_key = $secret_key;
         $this->is_verified = $is_verified;
-        $this->picture    = $picture;
-        $this->created    = $created;
-        $this->updated    = $updated;
+        $this->picture = $picture;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

@@ -20,10 +20,10 @@ class EventsEndpoint
     /**
      * EventsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class EventsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of events for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'type', 'install_id', 'user_id', 'license_id', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'type', 'install_id', 'user_id', 'license_id', 'fields', 'count').
      *
      * @return Event[] An array of Event entities.
      * @throws ApiException If the API request fails.
@@ -84,9 +84,9 @@ class EventsEndpoint
     /**
      * Retrieve a specific event.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $eventId  The event ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $eventId The event ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Event The Event entity.
      * @throws ApiException If the API request fails.

@@ -19,10 +19,10 @@ class EmailsEndpoint
     /**
      * EmailsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -30,17 +30,17 @@ class EmailsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of email templates for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'trigger', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'trigger', 'fields', 'count').
      *
      * @return array An array of email template data.
      * @throws ApiException If the API request fails.
@@ -70,9 +70,9 @@ class EmailsEndpoint
     /**
      * Retrieve a specific email template.
      *
-     * @param int   $pluginId   The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param string $trigger The email trigger (e.g., 'after_purchase').
-     * @param array $params     Optional query parameters (e.g., 'fields').
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return array An array containing the email template data.
      * @throws ApiException If the API request fails.
@@ -99,9 +99,9 @@ class EmailsEndpoint
     /**
      * Update an existing email template.
      *
-     * @param int   $pluginId   The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param string $trigger The email trigger (e.g., 'after_purchase').
-     * @param array $data       The email template data to update.
+     * @param array $data The email template data to update.
      *
      * @return array An array containing the updated email template data.
      * @throws ApiException If the API request fails.
@@ -128,9 +128,9 @@ class EmailsEndpoint
     /**
      * Send a test email.
      *
-     * @param int   $pluginId   The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param string $trigger The email trigger (e.g., 'after_purchase').
-     * @param string $email     The email address to send the test email to.
+     * @param string $email The email address to send the test email to.
      *
      * @throws ApiException If the API request fails.
      */

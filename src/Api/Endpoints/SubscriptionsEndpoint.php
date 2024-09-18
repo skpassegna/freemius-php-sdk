@@ -20,10 +20,10 @@ class SubscriptionsEndpoint
     /**
      * SubscriptionsEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class SubscriptionsEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of subscriptions for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'user_id', 'plan_id', 'status', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'user_id', 'plan_id', 'status', 'fields', 'count').
      *
      * @return Subscription[] An array of Subscription entities.
      * @throws ApiException If the API request fails.
@@ -75,7 +75,7 @@ class SubscriptionsEndpoint
                 $subscriptionData['status'],
                 $subscriptionData['billing_cycle'],
                 $subscriptionData['payment_method'],
-                $subscriptionData['next_payment'],
+                $subscriptionData['next_payment'] ?? null,
                 $subscriptionData['created'],
                 $subscriptionData['updated']
             );
@@ -87,9 +87,9 @@ class SubscriptionsEndpoint
     /**
      * Retrieve a specific subscription.
      *
-     * @param int   $pluginId        The plugin ID.
-     * @param int   $subscriptionId The subscription ID.
-     * @param array $params          Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $subscriptionId The subscription ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Subscription The Subscription entity.
      * @throws ApiException If the API request fails.
@@ -118,7 +118,7 @@ class SubscriptionsEndpoint
             $response['status'],
             $response['billing_cycle'],
             $response['payment_method'],
-            $response['next_payment'],
+            $response['next_payment'] ?? null,
             $response['created'],
             $response['updated']
         );
@@ -127,9 +127,9 @@ class SubscriptionsEndpoint
     /**
      * Cancel a subscription.
      *
-     * @param int   $pluginId        The plugin ID.
-     * @param int   $subscriptionId The subscription ID.
-     * @param array $params          Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $subscriptionId The subscription ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Subscription The cancelled Subscription entity.
      * @throws ApiException If the API request fails.
@@ -157,7 +157,7 @@ class SubscriptionsEndpoint
             $response['status'],
             $response['billing_cycle'],
             $response['payment_method'],
-            $response['next_payment'],
+            $response['next_payment'] ?? null,
             $response['created'],
             $response['updated']
         );
@@ -166,9 +166,9 @@ class SubscriptionsEndpoint
     /**
      * Sync a subscription with the payment gateway.
      *
-     * @param int   $pluginId        The plugin ID.
-     * @param int   $subscriptionId The subscription ID.
-     * @param array $params          Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $subscriptionId The subscription ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Subscription The synced Subscription entity.
      * @throws ApiException If the API request fails.
@@ -197,7 +197,7 @@ class SubscriptionsEndpoint
             $response['status'],
             $response['billing_cycle'],
             $response['payment_method'],
-            $response['next_payment'],
+            $response['next_payment'] ?? null,
             $response['created'],
             $response['updated']
         );

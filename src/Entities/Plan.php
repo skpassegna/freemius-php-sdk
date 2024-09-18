@@ -55,40 +55,40 @@ class Plan
         int $plugin_id,
         string $name,
         string $title,
-        ?string $description = null,
-        bool $is_free_localhost = false,
-        int $license_type = 0,
-        ?int $trial_period = null,
-        bool $is_require_subscription = false,
-        ?string $support_kb = null,
-        ?string $support_forum = null,
-        ?string $support_email = null,
-        ?string $support_phone = null,
-        ?string $support_skype = null,
-        bool $is_success_manager = false,
-        bool $is_featured = false,
-        bool $is_https_support = false,
+        ?string $description,
+        bool $is_free_localhost,
+        int $license_type,
+        ?int $trial_period,
+        bool $is_require_subscription,
+        ?string $support_kb,
+        ?string $support_forum,
+        ?string $support_email,
+        ?string $support_phone,
+        ?string $support_skype,
+        bool $is_success_manager,
+        bool $is_featured,
+        bool $is_https_support,
         string $created,
-        ?string $updated = null
+        ?string $updated
     ) {
-        $this->id                   = $id;
-        $this->plugin_id             = $plugin_id;
-        $this->name                 = $name;
-        $this->title                = $title;
-        $this->description          = $description;
-        $this->is_free_localhost      = $is_free_localhost;
-        $this->license_type           = $license_type;
-        $this->trial_period           = $trial_period;
+        $this->id = $id;
+        $this->plugin_id = $plugin_id;
+        $this->name = $name;
+        $this->title = $title;
+        $this->description = $description;
+        $this->is_free_localhost = $is_free_localhost;
+        $this->license_type = $license_type;
+        $this->trial_period = $trial_period;
         $this->is_require_subscription = $is_require_subscription;
-        $this->support_kb            = $support_kb;
-        $this->support_forum         = $support_forum;
-        $this->support_email          = $support_email;
-        $this->support_phone          = $support_phone;
-        $this->support_skype          = $support_skype;
-        $this->is_success_manager     = $is_success_manager;
-        $this->is_featured            = $is_featured;
-        $this->is_https_support       = $is_https_support;
-        $this->created              = $created;
-        $this->updated              = $updated;
+        $this->support_kb = $support_kb;
+        $this->support_forum = $support_forum;
+        $this->support_email = $support_email;
+        $this->support_phone = $support_phone;
+        $this->support_skype = $support_skype;
+        $this->is_success_manager = $is_success_manager;
+        $this->is_featured = $is_featured;
+        $this->is_https_support = $is_https_support;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

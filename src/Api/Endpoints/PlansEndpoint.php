@@ -20,10 +20,10 @@ class PlansEndpoint
     /**
      * PlansEndpoint constructor.
      *
-     * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $scope        The API scope.
+     * @param int $developerId The Freemius developer ID.
+     * @param string $scope The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
@@ -31,17 +31,17 @@ class PlansEndpoint
         int $developerId,
         string $scope
     ) {
-        $this->httpClient   = $httpClient;
+        $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId  = $developerId;
-        $this->scope        = $scope;
+        $this->developerId = $developerId;
+        $this->scope = $scope;
     }
 
     /**
      * Retrieve a list of plans for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields', 'count').
      *
      * @return Plan[] An array of Plan entities.
      * @throws ApiException If the API request fails.
@@ -72,21 +72,21 @@ class PlansEndpoint
                 $planData['plugin_id'],
                 $planData['name'],
                 $planData['title'],
-                $planData['description'],
+                $planData['description'] ?? null,
                 $planData['is_free_localhost'],
                 $planData['license_type'],
-                $planData['trial_period'],
+                $planData['trial_period'] ?? null,
                 $planData['is_require_subscription'],
-                $planData['support_kb'],
-                $planData['support_forum'],
-                $planData['support_email'],
-                $planData['support_phone'],
-                $planData['support_skype'],
+                $planData['support_kb'] ?? null,
+                $planData['support_forum'] ?? null,
+                $planData['support_email'] ?? null,
+                $planData['support_phone'] ?? null,
+                $planData['support_skype'] ?? null,
                 $planData['is_success_manager'],
                 $planData['is_featured'],
                 $planData['is_https_support'],
                 $planData['created'],
-                $planData['updated']
+                $planData['updated'] ?? null
             );
         }
 
@@ -96,9 +96,9 @@ class PlansEndpoint
     /**
      * Retrieve a specific plan.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $planId   The plan ID.
-     * @param array $params   Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $planId The plan ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Plan The Plan entity.
      * @throws ApiException If the API request fails.
@@ -124,29 +124,29 @@ class PlansEndpoint
             $response['plugin_id'],
             $response['name'],
             $response['title'],
-            $response['description'],
+            $response['description'] ?? null,
             $response['is_free_localhost'],
             $response['license_type'],
-            $response['trial_period'],
+            $response['trial_period'] ?? null,
             $response['is_require_subscription'],
-            $response['support_kb'],
-            $response['support_forum'],
-            $response['support_email'],
-            $response['support_phone'],
-            $response['support_skype'],
+            $response['support_kb'] ?? null,
+            $response['support_forum'] ?? null,
+            $response['support_email'] ?? null,
+            $response['support_phone'] ?? null,
+            $response['support_skype'] ?? null,
             $response['is_success_manager'],
             $response['is_featured'],
             $response['is_https_support'],
             $response['created'],
-            $response['updated']
+            $response['updated'] ?? null
         );
     }
 
     /**
      * Create a new plan.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $data     The plan data.
+     * @param int $pluginId The plugin ID.
+     * @param array $data The plan data.
      *
      * @return Plan The created Plan entity.
      * @throws ApiException If the API request fails.
@@ -171,30 +171,30 @@ class PlansEndpoint
             $response['plugin_id'],
             $response['name'],
             $response['title'],
-            $response['description'],
+            $response['description'] ?? null,
             $response['is_free_localhost'],
             $response['license_type'],
-            $response['trial_period'],
+            $response['trial_period'] ?? null,
             $response['is_require_subscription'],
-            $response['support_kb'],
-            $response['support_forum'],
-            $response['support_email'],
-            $response['support_phone'],
-            $response['support_skype'],
+            $response['support_kb'] ?? null,
+            $response['support_forum'] ?? null,
+            $response['support_email'] ?? null,
+            $response['support_phone'] ?? null,
+            $response['support_skype'] ?? null,
             $response['is_success_manager'],
             $response['is_featured'],
             $response['is_https_support'],
             $response['created'],
-            $response['updated']
+            $response['updated'] ?? null
         );
     }
 
     /**
      * Update an existing plan.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $planId   The plan ID.
-     * @param array $data     The plan data to update.
+     * @param int $pluginId The plugin ID.
+     * @param int $planId The plan ID.
+     * @param array $data The plan data to update.
      *
      * @return Plan The updated Plan entity.
      * @throws ApiException If the API request fails.
@@ -220,21 +220,21 @@ class PlansEndpoint
             $response['plugin_id'],
             $response['name'],
             $response['title'],
-            $response['description'],
+            $response['description'] ?? null,
             $response['is_free_localhost'],
             $response['license_type'],
-            $response['trial_period'],
+            $response['trial_period'] ?? null,
             $response['is_require_subscription'],
-            $response['support_kb'],
-            $response['support_forum'],
-            $response['support_email'],
-            $response['support_phone'],
-            $response['support_skype'],
+            $response['support_kb'] ?? null,
+            $response['support_forum'] ?? null,
+            $response['support_email'] ?? null,
+            $response['support_phone'] ?? null,
+            $response['support_skype'] ?? null,
             $response['is_success_manager'],
             $response['is_featured'],
             $response['is_https_support'],
             $response['created'],
-            $response['updated']
+            $response['updated'] ?? null
         );
     }
 
@@ -242,7 +242,7 @@ class PlansEndpoint
      * Delete a plan.
      *
      * @param int $pluginId The plugin ID.
-     * @param int $planId   The plan ID.
+     * @param int $planId The plan ID.
      *
      * @throws ApiException If the API request fails.
      */

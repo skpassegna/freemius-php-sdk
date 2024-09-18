@@ -30,17 +30,17 @@ class Feature
         int $id,
         int $plugin_id,
         string $title,
-        ?string $description = null,
-        bool $is_featured = false,
+        ?string $description,
+        bool $is_featured,
         string $created,
-        ?string $updated = null
+        ?string $updated
     ) {
-        $this->id          = $id;
-        $this->plugin_id    = $plugin_id;
-        $this->title       = $title;
+        $this->id = $id;
+        $this->plugin_id = $plugin_id;
+        $this->title = $title;
         $this->description = $description;
-        $this->is_featured  = $is_featured;
-        $this->created     = $created;
-        $this->updated     = $updated;
+        $this->is_featured = $is_featured;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 }

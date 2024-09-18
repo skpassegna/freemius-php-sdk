@@ -35,12 +35,12 @@ class Event
         ?int $license_id = null,
         ?array $data = null
     ) {
-        $this->id        = $id;
-        $this->date      = $date;
-        $this->type      = $type;
+        $this->id = $id;
+        $this->date = $date;
+        $this->type = $type;
         $this->install_id = $install_id;
-        $this->user_id    = $user_id;
+        $this->user_id = $user_id;
         $this->license_id = $license_id;
-        $this->data      = $data;
+        $this->data = $data;
     }
 }
