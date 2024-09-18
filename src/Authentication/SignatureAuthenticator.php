@@ -31,7 +31,7 @@ class SignatureAuthenticator implements AuthenticatorInterface
     /**
      * @inheritDoc
      */
-    public function getAuthHeaders(string $method, string $url, array|string $body = []): array
+    public function getAuthHeaders(string $method, string $url, array|string $body = null): array
     {
         $date = date(self::DATE_FORMAT);
         $canonicalizedResource = $this->canonicalizeResource($url);

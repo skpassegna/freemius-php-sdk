@@ -23,11 +23,11 @@ interface AuthenticatorInterface
     /**
      * Get the authentication headers for an API request.
      *
-     * @param string $method The HTTP method of the request (e.g., 'GET', 'POST').
-     * @param string $url    The URL of the request.
-     * @param array  $body   The request body (if applicable).
+     * @param string                $method The HTTP method of the request (e.g., 'GET', 'POST').
+     * @param string                $url    The URL of the request.
+     * @param array|string|null $body   The request body (if applicable).
      *
      * @return array An array of authentication headers.
      */
-    public function getAuthHeaders(string $method, string $url, array $body = []): array;
+    public function getAuthHeaders(string $method, string $url, array|string|null $body = null): array;
 }

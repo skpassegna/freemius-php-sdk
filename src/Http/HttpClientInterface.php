@@ -16,10 +16,10 @@ interface HttpClientInterface
      * @param array  $params  Optional query parameters.
      * @param array  $headers Optional headers.
      *
-     * @return array The API response as an associative array.
+     * @return array|string The API response as an associative array or a string.
      * @throws \Freemius\SDK\Exceptions\ApiException If the API request fails.
      */
-    public function get(string $url, array $params = [], array $headers = []): array;
+    public function get(string $url, array $params = [], array $headers = []): array|string;
 
     /**
      * Send a POST request.
@@ -28,10 +28,10 @@ interface HttpClientInterface
      * @param array  $data    Optional request body data.
      * @param array  $headers Optional headers.
      *
-     * @return array The API response as an associative array.
+     * @return array|string The API response as an associative array or a string.
      * @throws \Freemius\SDK\Exceptions\ApiException If the API request fails.
      */
-    public function post(string $url, array $data = [], array $headers = []): array;
+    public function post(string $url, array $data = [], array $headers = []): array|string;
 
     /**
      * Send a PUT request.
@@ -40,10 +40,10 @@ interface HttpClientInterface
      * @param array  $data    Optional request body data.
      * @param array  $headers Optional headers.
      *
-     * @return array The API response as an associative array.
+     * @return array|string The API response as an associative array or a string.
      * @throws \Freemius\SDK\Exceptions\ApiException If the API request fails.
      */
-    public function put(string $url, array $data = [], array $headers = []): array;
+    public function put(string $url, array $data = [], array $headers = []): array|string;
 
     /**
      * Send a DELETE request.
@@ -51,8 +51,8 @@ interface HttpClientInterface
      * @param string $url     The URL to send the request to.
      * @param array  $headers Optional headers.
      *
-     * @return array The API response as an associative array.
+     * @return array|string The API response as an associative array or a string.
      * @throws \Freemius\SDK\Exceptions\ApiException If the API request fails.
      */
-    public function delete(string $url, array $headers = []): array;
+    public function delete(string $url, array $headers = []): array|string;
 }
