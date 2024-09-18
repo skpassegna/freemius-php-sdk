@@ -8,10 +8,10 @@ namespace Freemius\SDK\Entities;
 class Feature
 {
     public int $id;
-    public int $pluginId;
+    public int $plugin_id;
     public string $title;
     public ?string $description;
-    public bool $isFeatured;
+    public bool $is_featured;
     public string $created;
     public ?string $updated;
 
@@ -19,27 +19,27 @@ class Feature
      * Feature constructor.
      *
      * @param int         $id          The feature ID.
-     * @param int         $pluginId    The plugin ID.
+     * @param int         $plugin_id    The plugin ID.
      * @param string      $title       The feature title.
      * @param string|null $description The feature description (optional).
-     * @param bool        $isFeatured  Whether the feature is featured.
+     * @param bool        $is_featured  Whether the feature is featured.
      * @param string      $created     The creation timestamp.
      * @param string|null $updated     The last update timestamp (optional).
      */
     public function __construct(
         int $id,
-        int $pluginId,
+        int $plugin_id,
         string $title,
         ?string $description = null,
-        bool $isFeatured = false,
+        bool $is_featured = false,
         string $created,
         ?string $updated = null
     ) {
         $this->id          = $id;
-        $this->pluginId    = $pluginId;
+        $this->plugin_id    = $plugin_id;
         $this->title       = $title;
         $this->description = $description;
-        $this->isFeatured  = $isFeatured;
+        $this->is_featured  = $is_featured;
         $this->created     = $created;
         $this->updated     = $updated;
     }

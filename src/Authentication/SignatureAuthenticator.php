@@ -73,9 +73,12 @@ class SignatureAuthenticator implements AuthenticatorInterface
      *
      * @return string The string to sign.
      */
-    private function buildStringToSign(string $method, string $canonicalizedResource, string $date, array|string $body): string
+    private function buildStringToSign(string $method, string $canonicalizedResource, string $date, array|string $body = []): string
     {
-        $contentMd5 = !empty($body) ? md5(is_array($body) ? json_encode($body) : $body) : '';
+        // Only calculate content MD5 hash for requests with a body
+        $contentMd5 = in_array($method, ['POST', 'PUT']) && !empty($body)
+            ? md5(is_array($body) ? json_encode($body) : $body)
+            : '';
 
         return implode("\n", [
             strtoupper($method),

@@ -10,6 +10,7 @@ use Freemius\SDK\Exceptions\ApiException;
 class CurlHttpClient implements HttpClientInterface
 {
     private string $baseUrl;
+    private string $scope;
 
     private const MAX_RETRIES = 3;
     private const RETRY_DELAY = 1; // in seconds
@@ -18,16 +19,18 @@ class CurlHttpClient implements HttpClientInterface
      * CurlHttpClient constructor.
      *
      * @param string $baseUrl The base URL for API requests.
+     * @param string $scope The API scope.
      */
-    public function __construct(string $baseUrl)
+    public function __construct(string $baseUrl, string $scope)
     {
         $this->baseUrl = $baseUrl;
+        $this->scope   = $scope;
     }
 
     /**
      * @inheritDoc
      */
-    public function get(string $url, array $params = [], array $headers = []): array
+    public function get(string $url, array $params = [], array $headers = []): array|string
     {
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -39,7 +42,7 @@ class CurlHttpClient implements HttpClientInterface
     /**
      * @inheritDoc
      */
-    public function post(string $url, array $data = [], array $headers = []): array
+    public function post(string $url, array $data = [], array $headers = []): array|string
     {
         return $this->makeRequest($url, 'POST', $data, $headers);
     }
@@ -47,7 +50,7 @@ class CurlHttpClient implements HttpClientInterface
     /**
      * @inheritDoc
      */
-    public function put(string $url, array $data = [], array $headers = []): array
+    public function put(string $url, array $data = [], array $headers = []): array|string
     {
         return $this->makeRequest($url, 'PUT', $data, $headers);
     }
@@ -55,7 +58,7 @@ class CurlHttpClient implements HttpClientInterface
     /**
      * @inheritDoc
      */
-    public function delete(string $url, array $headers = []): array
+    public function delete(string $url, array $headers = []): array|string
     {
         return $this->makeRequest($url, 'DELETE', [], $headers);
     }
@@ -68,18 +71,18 @@ class CurlHttpClient implements HttpClientInterface
      * @param array  $data    Optional request body data.
      * @param array  $headers Optional headers.
      *
-     * @return array The API response as an associative array.
+     * @return array|string The API response as an associative array or a string for non-JSON responses.
      * @throws ApiException If the API request fails.
      */
-    private function makeRequest(string $url, string $method, array $data = [], array $headers = []): array
+    private function makeRequest(string $url, string $method, array $data = [], array $headers = []): array|string
     {
         $retries = 0;
 
         while ($retries < self::MAX_RETRIES) {
             $ch = curl_init();
 
-            // Prepend the base URL to the endpoint path
-            curl_setopt($ch, CURLOPT_URL, $this->baseUrl . $url);
+            // Prepend the base URL and scope to the endpoint path
+            curl_setopt($ch, CURLOPT_URL, $this->baseUrl . '/v1/' . $this->scope . $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -105,16 +108,6 @@ class CurlHttpClient implements HttpClientInterface
 
             curl_close($ch);
 
-            $decodedResponse = json_decode($response, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ApiException(
-                    [],
-                    'Invalid JSON response from API: ' . json_last_error_msg(),
-                    json_last_error()
-                );
-            }
-
             // Check for rate limiting errors (assuming HTTP status code 429)
             if ($statusCode === 429) {
                 $retries++;
@@ -122,9 +115,26 @@ class CurlHttpClient implements HttpClientInterface
                 continue;
             }
 
-            $decodedResponse['statusCode'] = $statusCode;
+            // Check if the response is JSON
+            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            if (strpos($contentType, 'application/json') !== false) {
+                $decodedResponse = json_decode($response, true);
 
-            return $decodedResponse;
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new ApiException(
+                        [],
+                        'Invalid JSON response from API: ' . json_last_error_msg(),
+                        json_last_error()
+                    );
+                }
+
+                $decodedResponse['statusCode'] = $statusCode;
+
+                return $decodedResponse;
+            } else {
+                // Return raw response content for non-JSON responses
+                return $response;
+            }
         }
 
         // If we reach here, all retries have failed

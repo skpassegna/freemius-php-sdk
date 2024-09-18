@@ -15,6 +15,7 @@ class CouponsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * CouponsEndpoint constructor.
@@ -22,15 +23,18 @@ class CouponsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class CouponsEndpoint
     public function getCoupons(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/coupons.json',
+            '/v1/%s/%d/plugins/%d/coupons.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -95,7 +100,8 @@ class CouponsEndpoint
     public function getCoupon(int $pluginId, int $couponId, array $params = []): Coupon
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/coupons/%d.json',
+            '/v1/%s/%d/plugins/%d/coupons/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $couponId
@@ -136,7 +142,8 @@ class CouponsEndpoint
     public function createCoupon(int $pluginId, array $data): Coupon
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/coupons.json',
+            '/v1/%s/%d/plugins/%d/coupons.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -177,7 +184,8 @@ class CouponsEndpoint
     public function updateCoupon(int $pluginId, int $couponId, array $data): Coupon
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/coupons/%d.json',
+            '/v1/%s/%d/plugins/%d/coupons/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $couponId
@@ -217,7 +225,8 @@ class CouponsEndpoint
     public function deleteCoupon(int $pluginId, int $couponId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/coupons/%d.json',
+            '/v1/%s/%d/plugins/%d/coupons/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $couponId

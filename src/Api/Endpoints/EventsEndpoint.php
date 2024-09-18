@@ -15,6 +15,7 @@ class EventsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * EventsEndpoint constructor.
@@ -22,15 +23,18 @@ class EventsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class EventsEndpoint
     public function getEvents(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/events.json',
+            '/v1/%s/%d/plugins/%d/events.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -89,7 +94,8 @@ class EventsEndpoint
     public function getEvent(int $pluginId, int $eventId, array $params = []): Event
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/events/%d.json',
+            '/v1/%s/%d/plugins/%d/events/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $eventId

@@ -15,6 +15,7 @@ class LicensesEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * LicensesEndpoint constructor.
@@ -22,15 +23,18 @@ class LicensesEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class LicensesEndpoint
     public function getLicenses(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses.json',
+            '/v1/%s/%d/plugins/%d/licenses.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -96,7 +101,8 @@ class LicensesEndpoint
     public function getLicense(int $pluginId, int $licenseId, array $params = []): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses/%d.json',
+            '/v1/%s/%d/plugins/%d/licenses/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $licenseId
@@ -139,7 +145,8 @@ class LicensesEndpoint
     public function updateLicense(int $pluginId, int $licenseId, array $data): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses/%d.json',
+            '/v1/%s/%d/plugins/%d/licenses/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $licenseId
@@ -182,7 +189,8 @@ class LicensesEndpoint
     public function deleteLicense(int $pluginId, int $licenseId, array $params = []): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses/%d.json',
+            '/v1/%s/%d/plugins/%d/licenses/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $licenseId
@@ -223,7 +231,8 @@ class LicensesEndpoint
     public function deactivateLicenseFromAllInstalls(int $pluginId, int $licenseId): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses/%d/installs.json',
+            '/v1/%s/%d/plugins/%d/licenses/%d/installs.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $licenseId
@@ -265,7 +274,8 @@ class LicensesEndpoint
     public function activateLicenseForInstall(int $pluginId, int $installId, int $licenseId): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/licenses/%d.json',
+            '/v1/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId,
@@ -309,7 +319,8 @@ class LicensesEndpoint
     public function deactivateLicenseFromInstall(int $pluginId, int $installId, int $licenseId): License
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/licenses/%d.json',
+            '/v1/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId,

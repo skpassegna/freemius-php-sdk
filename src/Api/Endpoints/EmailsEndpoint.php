@@ -14,6 +14,7 @@ class EmailsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * EmailsEndpoint constructor.
@@ -21,15 +22,18 @@ class EmailsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -44,7 +48,8 @@ class EmailsEndpoint
     public function getEmailTemplates(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/emails.json',
+            '/v1/%s/%d/plugins/%d/emails.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -75,7 +80,8 @@ class EmailsEndpoint
     public function getEmailTemplate(int $pluginId, string $trigger, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/emails/%s.json',
+            '/v1/%s/%d/plugins/%d/emails/%s.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $trigger
@@ -103,7 +109,8 @@ class EmailsEndpoint
     public function updateEmailTemplate(int $pluginId, string $trigger, array $data): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/emails/%s.json',
+            '/v1/%s/%d/plugins/%d/emails/%s.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $trigger
@@ -130,7 +137,8 @@ class EmailsEndpoint
     public function sendTestEmail(int $pluginId, string $trigger, string $email): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/emails/%s/test.json',
+            '/v1/%s/%d/plugins/%d/emails/%s/test.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $trigger

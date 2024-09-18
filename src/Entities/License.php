@@ -8,17 +8,17 @@ namespace Freemius\SDK\Entities;
 class License
 {
     public int $id;
-    public int $pluginId;
-    public int $userId;
-    public int $planId;
-    public int $pricingId;
+    public int $plugin_id;
+    public int $user_id;
+    public int $plan_id;
+    public int $pricing_id;
     public int $quota;
     public string $activated;
-    public ?string $activatedLocal;
+    public ?string $activated_local;
     public ?string $expiration;
-    public bool $isFreeLocalhost;
-    public bool $isBlockFeatures;
-    public bool $isCancelled;
+    public bool $is_free_localhost;
+    public bool $is_block_features;
+    public bool $is_cancelled;
     public string $created;
     public string $updated;
 
@@ -26,48 +26,48 @@ class License
      * License constructor.
      *
      * @param int         $id              The license ID.
-     * @param int         $pluginId        The plugin ID.
-     * @param int         $userId          The user ID.
-     * @param int         $planId          The plan ID.
-     * @param int         $pricingId        The pricing ID.
+     * @param int         $plugin_id        The plugin ID.
+     * @param int         $user_id          The user ID.
+     * @param int         $plan_id          The plan ID.
+     * @param int         $pricing_id        The pricing ID.
      * @param int         $quota           The license quota (number of sites).
      * @param string      $activated       The activation timestamp.
-     * @param string|null $activatedLocal  The local activation timestamp (optional).
+     * @param string|null $activated_local  The local activation timestamp (optional).
      * @param string|null $expiration      The expiration timestamp (optional).
-     * @param bool        $isFreeLocalhost Whether the license is free for localhost installs.
-     * @param bool        $isBlockFeatures  Whether the license blocks features.
-     * @param bool        $isCancelled      Whether the license is cancelled.
+     * @param bool        $is_free_localhost Whether the license is free for localhost installs.
+     * @param bool        $is_block_features  Whether the license blocks features.
+     * @param bool        $is_cancelled      Whether the license is cancelled.
      * @param string      $created         The creation timestamp.
      * @param string      $updated         The last update timestamp.
      */
     public function __construct(
         int $id,
-        int $pluginId,
-        int $userId,
-        int $planId,
-        int $pricingId,
+        int $plugin_id,
+        int $user_id,
+        int $plan_id,
+        int $pricing_id,
         int $quota,
         string $activated,
-        ?string $activatedLocal = null,
+        ?string $activated_local = null,
         ?string $expiration = null,
-        bool $isFreeLocalhost = false,
-        bool $isBlockFeatures = false,
-        bool $isCancelled = false,
+        bool $is_free_localhost = false,
+        bool $is_block_features = false,
+        bool $is_cancelled = false,
         string $created,
         string $updated
     ) {
         $this->id              = $id;
-        $this->pluginId        = $pluginId;
-        $this->userId          = $userId;
-        $this->planId          = $planId;
-        $this->pricingId        = $pricingId;
+        $this->plugin_id        = $plugin_id;
+        $this->user_id          = $user_id;
+        $this->plan_id          = $plan_id;
+        $this->pricing_id        = $pricing_id;
         $this->quota           = $quota;
         $this->activated       = $activated;
-        $this->activatedLocal  = $activatedLocal;
+        $this->activated_local  = $activated_local;
         $this->expiration      = $expiration;
-        $this->isFreeLocalhost = $isFreeLocalhost;
-        $this->isBlockFeatures  = $isBlockFeatures;
-        $this->isCancelled      = $isCancelled;
+        $this->is_free_localhost = $is_free_localhost;
+        $this->is_block_features  = $is_block_features;
+        $this->is_cancelled      = $is_cancelled;
         $this->created         = $created;
         $this->updated         = $updated;
     }

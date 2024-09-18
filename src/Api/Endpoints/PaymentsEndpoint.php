@@ -15,6 +15,7 @@ class PaymentsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * PaymentsEndpoint constructor.
@@ -22,15 +23,18 @@ class PaymentsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class PaymentsEndpoint
     public function getPayments(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/payments.json',
+            '/v1/%s/%d/plugins/%d/payments.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -95,7 +100,8 @@ class PaymentsEndpoint
     public function getPayment(int $pluginId, int $paymentId, array $params = []): Payment
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/payments/%d.json',
+            '/v1/%s/%d/plugins/%d/payments/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $paymentId
@@ -137,7 +143,8 @@ class PaymentsEndpoint
     public function refundPayment(int $pluginId, int $paymentId, array $params = []): Payment
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/payments/%d/refund.json',
+            '/v1/%s/%d/plugins/%d/payments/%d/refund.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $paymentId
