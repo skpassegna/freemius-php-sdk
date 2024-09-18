@@ -15,6 +15,7 @@ class FeaturesEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * FeaturesEndpoint constructor.
@@ -22,15 +23,18 @@ class FeaturesEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class FeaturesEndpoint
     public function getFeatures(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/features.json',
+            '/v1/%s/%d/plugins/%d/features.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -89,7 +94,8 @@ class FeaturesEndpoint
     public function getFeature(int $pluginId, int $featureId, array $params = []): Feature
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $featureId
@@ -124,7 +130,8 @@ class FeaturesEndpoint
     public function createFeature(int $pluginId, array $data): Feature
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/features.json',
+            '/v1/%s/%d/plugins/%d/features.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -159,7 +166,8 @@ class FeaturesEndpoint
     public function updateFeature(int $pluginId, int $featureId, array $data): Feature
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $featureId
@@ -193,7 +201,8 @@ class FeaturesEndpoint
     public function deleteFeature(int $pluginId, int $featureId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $featureId
@@ -219,7 +228,8 @@ class FeaturesEndpoint
     public function addFeatureToPlan(int $pluginId, int $planId, int $featureId, array $data): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId,
@@ -249,7 +259,8 @@ class FeaturesEndpoint
     public function updatePlanFeatureValue(int $pluginId, int $planId, int $featureId, array $data): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId,
@@ -277,7 +288,8 @@ class FeaturesEndpoint
     public function removeFeatureFromPlan(int $pluginId, int $planId, int $featureId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d/features/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d/features/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId,

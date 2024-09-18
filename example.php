@@ -11,16 +11,19 @@ $scope        = 'developer';
 $developerId  = 17789;
 $publicKey    = 'pk_e9f68da8dc036c0085723313b9e2d';
 $secretKey    = 'sk_6SWIE]0xiZ6RHc]QaQ;)A(hpf1-*x';
-$sandbox      = true; // Set to false for production
+$sandbox      = false; // Set to false for production
 
 $api = new FreemiusApi($scope, $developerId, $publicKey, $secretKey, $sandbox);
 
-try {
-    // Get a list of plugins for the developer
-    $plugins = $api->plugins()->getPlugins();
 
-    // Print the title of each plugin
-    foreach ($plugins as $plugin) {
+
+try {
+  // Get a list of plugins for the developer
+  $plugins = $api->plugins()->getPlugins();
+
+  dd($plugins);
+  // Print the title of each plugin
+  /* foreach ($plugins as $plugin) {
         echo $plugin->title . PHP_EOL;
     }
 
@@ -36,7 +39,7 @@ try {
     // Print the URL of each install
     foreach ($installs as $install) {
         echo $install->url . PHP_EOL;
-    }
+    } */
 } catch (Exception $e) {
-    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+  echo 'Error: ' . $e->getMessage() . PHP_EOL;
 }

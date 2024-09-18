@@ -15,6 +15,7 @@ class PluginsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * PluginsEndpoint constructor.
@@ -22,15 +23,18 @@ class PluginsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -43,7 +47,7 @@ class PluginsEndpoint
      */
     public function getPlugins(array $params = []): array
     {
-        $url = sprintf('/developers/%d/plugins.json', $this->developerId);
+        $url = sprintf('/v1/%s/%d/plugins.json', $this->scope, $this->developerId);
 
         $response = $this->httpClient->get(
             $url,
@@ -87,7 +91,8 @@ class PluginsEndpoint
     public function getPlugin(int $pluginId, array $params = []): Plugin
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d.json',
+            '/v1/%s/%d/plugins/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -123,7 +128,7 @@ class PluginsEndpoint
      */
     public function createPlugin(array $data): Plugin
     {
-        $url = sprintf('/developers/%d/plugins.json', $this->developerId);
+        $url = sprintf('/v1/%s/%d/plugins.json', $this->scope, $this->developerId);
 
         $response = $this->httpClient->post(
             $url,
@@ -158,7 +163,8 @@ class PluginsEndpoint
     public function updatePlugin(int $pluginId, array $data): Plugin
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d.json',
+            '/v1/%s/%d/plugins/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -194,7 +200,8 @@ class PluginsEndpoint
     public function deletePlugin(int $pluginId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d.json',
+            '/v1/%s/%d/plugins/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -216,7 +223,8 @@ class PluginsEndpoint
     public function regenerateSecretKey(int $pluginId): string
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/secret_key.json',
+            '/v1/%s/%d/plugins/%d/secret_key.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -246,7 +254,8 @@ class PluginsEndpoint
     public function getPluginStatus(int $pluginId, bool $isUpdate = false): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/is_active.json',
+            '/v1/%s/%d/plugins/%d/is_active.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -273,7 +282,8 @@ class PluginsEndpoint
     public function getPluginStatistics(int $pluginId, ?string $start = null, ?string $end = null): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/stats.json',
+            '/v1/%s/%d/plugins/%d/stats.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -306,7 +316,8 @@ class PluginsEndpoint
     public function getPluginPerformance(int $pluginId): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/performance.json',
+            '/v1/%s/%d/plugins/%d/performance.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -334,7 +345,8 @@ class PluginsEndpoint
     public function getPluginRevenues(int $pluginId, string $from, string $to, string $interval = 'day'): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/revenues.json',
+            '/v1/%s/%d/plugins/%d/revenues.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -366,7 +378,8 @@ class PluginsEndpoint
     public function getPluginLicensesActivity(int $pluginId, string $from, string $to, string $interval = 'day'): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/licenses.json',
+            '/v1/%s/%d/plugins/%d/licenses.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );

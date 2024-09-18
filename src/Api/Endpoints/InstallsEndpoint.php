@@ -15,7 +15,7 @@ class InstallsEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
-    private string $baseUrl;
+    private string $scope;
 
     /**
      * InstallsEndpoint constructor.
@@ -23,18 +23,18 @@ class InstallsEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $baseUrl      The base URL for API requests.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
         int $developerId,
-        string $baseUrl
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
-        $this->baseUrl      = $baseUrl;
+        $this->scope        = $scope;
     }
 
     /**
@@ -49,7 +49,8 @@ class InstallsEndpoint
     public function getInstalls(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs.json',
+            '/v1/%s/%d/plugins/%d/installs.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -117,7 +118,8 @@ class InstallsEndpoint
     public function getInstall(int $pluginId, int $installId, array $params = []): Install
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d.json',
+            '/v1/%s/%d/plugins/%d/installs/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId
@@ -177,7 +179,8 @@ class InstallsEndpoint
     public function createInstall(int $pluginId, int $userId, array $data): Install
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users/%d/installs.json',
+            '/v1/%s/%d/plugins/%d/users/%d/installs.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $userId
@@ -237,7 +240,8 @@ class InstallsEndpoint
     public function updateInstall(int $pluginId, int $installId, array $data): Install
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d.json',
+            '/v1/%s/%d/plugins/%d/installs/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId
@@ -295,7 +299,8 @@ class InstallsEndpoint
     public function deleteInstall(int $pluginId, int $installId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d.json',
+            '/v1/%s/%d/plugins/%d/installs/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId
@@ -320,7 +325,7 @@ class InstallsEndpoint
     public function getUninstallDetails(int $pluginId, int $installId, array $params = []): array
     {
         $url = sprintf(
-            '/plugins/%d/installs/%d/uninstall.json',
+            '/v1/plugins/%d/installs/%d/uninstall.json',
             $pluginId,
             $installId
         );
@@ -347,7 +352,8 @@ class InstallsEndpoint
     public function downgradePlan(int $pluginId, int $installId, array $params = []): Install
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/downgrade.json',
+            '/v1/%s/%d/plugins/%d/installs/%d/downgrade.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId
@@ -408,7 +414,8 @@ class InstallsEndpoint
     public function getUpdates(int $pluginId, int $installId, string $version, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/installs/%d/updates.json',
+            '/v1/%s/%d/plugins/%d/installs/%d/updates.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId
@@ -439,8 +446,8 @@ class InstallsEndpoint
     public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string
     {
         $url = sprintf(
-            '%s/developers/%d/plugins/%d/installs/%d/updates/%d.zip',
-            $this->baseUrl,
+            '/v1/%s/%d/plugins/%d/installs/%d/updates/%d.zip',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $installId,
@@ -454,5 +461,33 @@ class InstallsEndpoint
         );
 
         return $response['content'] ?? '';
+    }
+
+    /**
+     * Send a confirmation email for an install's user ownership change.
+     *
+     * @param int   $pluginId  The plugin ID.
+     * @param int   $installId The install ID.
+     * @param int   $userId    The user ID.
+     * @param array $data      The ownership change data.
+     *
+     * @throws ApiException If the API request fails.
+     */
+    public function sendOwnershipChangeConfirmation(int $pluginId, int $installId, int $userId, array $data): void
+    {
+        $url = sprintf(
+            '/v1/%s/%d/plugins/%d/installs/%d/users/%d/ownership-change.json',
+            $this->scope,
+            $this->developerId,
+            $pluginId,
+            $installId,
+            $userId
+        );
+
+        $this->httpClient->put(
+            $url,
+            $data,
+            $this->authenticator->getAuthHeaders('PUT', $url, $data)
+        );
     }
 }

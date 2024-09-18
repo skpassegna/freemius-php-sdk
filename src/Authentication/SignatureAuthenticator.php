@@ -31,7 +31,7 @@ class SignatureAuthenticator implements AuthenticatorInterface
     /**
      * @inheritDoc
      */
-    public function getAuthHeaders(string $method, string $url, array $body = []): array
+    public function getAuthHeaders(string $method, string $url, array|string $body = []): array
     {
         $date = date(self::DATE_FORMAT);
         $canonicalizedResource = $this->canonicalizeResource($url);
@@ -66,16 +66,16 @@ class SignatureAuthenticator implements AuthenticatorInterface
     /**
      * Build the string to sign for the request.
      *
-     * @param string $method              The HTTP method.
-     * @param string $canonicalizedResource The canonicalized resource.
-     * @param string $date                 The request date.
-     * @param array  $body                The request body.
+     * @param string       $method              The HTTP method.
+     * @param string       $canonicalizedResource The canonicalized resource.
+     * @param string       $date                 The request date.
+     * @param array|string $body                The request body.
      *
      * @return string The string to sign.
      */
-    private function buildStringToSign(string $method, string $canonicalizedResource, string $date, array $body): string
+    private function buildStringToSign(string $method, string $canonicalizedResource, string $date, array|string $body): string
     {
-        $contentMd5 = !empty($body) ? md5(json_encode($body)) : '';
+        $contentMd5 = !empty($body) ? md5(is_array($body) ? json_encode($body) : $body) : '';
 
         return implode("\n", [
             strtoupper($method),

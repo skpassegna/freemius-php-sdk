@@ -23,14 +23,12 @@ use Freemius\SDK\Http\HttpClientInterface;
  */
 class FreemiusApi
 {
-    private const API_BASE_URL = 'https://api.freemius.com';
-    private const API_SANDBOX_BASE_URL = 'https://api.sandbox.freemius.com';
-
     private string $scope;
     private int $developerId;
     private string $publicKey;
     private string $secretKey;
     private bool $sandbox;
+    private string $baseUrl;
 
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
@@ -60,19 +58,14 @@ class FreemiusApi
         $this->publicKey    = $publicKey;
         $this->secretKey    = $secretKey;
         $this->sandbox      = $sandbox;
-        $this->httpClient   = $httpClient ?? new CurlHttpClient();
+
+        // Load configuration
+        $config = require __DIR__ . '/../../config.php';
+        $this->baseUrl = $this->sandbox ? $config['API_SANDBOX_BASE_URL'] : $config['API_BASE_URL'];
+
+        $this->httpClient   = $httpClient ?? new CurlHttpClient($this->baseUrl, $this->scope);
         $this->authenticator = $authenticator
             ?? new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey);
-    }
-
-    /**
-     * Get the base URL for API requests.
-     *
-     * @return string
-     */
-    public function getBaseUrl(): string
-    {
-        return $this->sandbox ? self::API_SANDBOX_BASE_URL : self::API_BASE_URL;
     }
 
     /**
@@ -82,7 +75,7 @@ class FreemiusApi
      */
     public function plugins(): PluginsEndpoint
     {
-        return new PluginsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new PluginsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -92,7 +85,7 @@ class FreemiusApi
      */
     public function users(): UsersEndpoint
     {
-        return new UsersEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new UsersEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -102,7 +95,7 @@ class FreemiusApi
      */
     public function installs(): InstallsEndpoint
     {
-        return new InstallsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new InstallsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -112,7 +105,7 @@ class FreemiusApi
      */
     public function plans(): PlansEndpoint
     {
-        return new PlansEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new PlansEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -122,7 +115,7 @@ class FreemiusApi
      */
     public function features(): FeaturesEndpoint
     {
-        return new FeaturesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new FeaturesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -132,7 +125,7 @@ class FreemiusApi
      */
     public function licenses(): LicensesEndpoint
     {
-        return new LicensesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new LicensesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -142,7 +135,7 @@ class FreemiusApi
      */
     public function subscriptions(): SubscriptionsEndpoint
     {
-        return new SubscriptionsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new SubscriptionsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -152,7 +145,7 @@ class FreemiusApi
      */
     public function payments(): PaymentsEndpoint
     {
-        return new PaymentsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new PaymentsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -162,7 +155,7 @@ class FreemiusApi
      */
     public function coupons(): CouponsEndpoint
     {
-        return new CouponsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new CouponsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -172,7 +165,7 @@ class FreemiusApi
      */
     public function emails(): EmailsEndpoint
     {
-        return new EmailsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new EmailsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 
     /**
@@ -182,6 +175,6 @@ class FreemiusApi
      */
     public function events(): EventsEndpoint
     {
-        return new EventsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->getBaseUrl());
+        return new EventsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
     }
 }

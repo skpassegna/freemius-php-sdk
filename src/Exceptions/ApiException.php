@@ -44,4 +44,14 @@ class ApiException extends FreemiusException
     {
         return $this->response;
     }
+
+    /**
+     * Get the HTTP status code of the API response.
+     *
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return $this->response['statusCode'] ?? 0;
+    }
 }

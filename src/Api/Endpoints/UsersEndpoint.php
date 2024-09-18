@@ -15,7 +15,7 @@ class UsersEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
-    private string $baseUrl;
+    private string $scope;
 
     /**
      * UsersEndpoint constructor.
@@ -23,18 +23,18 @@ class UsersEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
-     * @param string                 $baseUrl      The base URL for API requests.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
         int $developerId,
-        string $baseUrl
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
-        $this->baseUrl      = $baseUrl;
+        $this->scope        = $scope;
     }
 
     /**
@@ -49,7 +49,8 @@ class UsersEndpoint
     public function getUsers(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users.json',
+            '/v1/%s/%d/plugins/%d/users.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -96,7 +97,8 @@ class UsersEndpoint
     public function getUser(int $pluginId, int $userId, array $params = []): User
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users/%d.json',
+            '/v1/%s/%d/plugins/%d/users/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $userId
@@ -134,7 +136,8 @@ class UsersEndpoint
     public function createUser(int $pluginId, array $data): User
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users.json',
+            '/v1/%s/%d/plugins/%d/users.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -172,7 +175,8 @@ class UsersEndpoint
     public function updateUser(int $pluginId, int $userId, array $data): User
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/users/%d.json',
+            '/v1/%s/%d/plugins/%d/users/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $userId
@@ -210,8 +214,8 @@ class UsersEndpoint
     public function downloadUsersCSV(int $pluginId, array $params = []): string
     {
         $url = sprintf(
-            '%s/developers/%d/plugins/%d/users.csv',
-            $this->baseUrl,
+            '/v1/%s/%d/plugins/%d/users.csv',
+            $this->scope,
             $this->developerId,
             $pluginId
         );

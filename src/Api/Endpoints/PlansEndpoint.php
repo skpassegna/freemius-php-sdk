@@ -15,6 +15,7 @@ class PlansEndpoint
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
     private int $developerId;
+    private string $scope;
 
     /**
      * PlansEndpoint constructor.
@@ -22,15 +23,18 @@ class PlansEndpoint
      * @param HttpClientInterface   $httpClient   The HTTP client to use for API requests.
      * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
      * @param int                    $developerId  The Freemius developer ID.
+     * @param string                 $scope        The API scope.
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId
+        int $developerId,
+        string $scope
     ) {
         $this->httpClient   = $httpClient;
         $this->authenticator = $authenticator;
         $this->developerId  = $developerId;
+        $this->scope        = $scope;
     }
 
     /**
@@ -45,7 +49,8 @@ class PlansEndpoint
     public function getPlans(int $pluginId, array $params = []): array
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans.json',
+            '/v1/%s/%d/plugins/%d/plans.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -101,7 +106,8 @@ class PlansEndpoint
     public function getPlan(int $pluginId, int $planId, array $params = []): Plan
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId
@@ -148,7 +154,8 @@ class PlansEndpoint
     public function createPlan(int $pluginId, array $data): Plan
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans.json',
+            '/v1/%s/%d/plugins/%d/plans.json',
+            $this->scope,
             $this->developerId,
             $pluginId
         );
@@ -195,7 +202,8 @@ class PlansEndpoint
     public function updatePlan(int $pluginId, int $planId, array $data): Plan
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId
@@ -241,7 +249,8 @@ class PlansEndpoint
     public function deletePlan(int $pluginId, int $planId): void
     {
         $url = sprintf(
-            '/developers/%d/plugins/%d/plans/%d.json',
+            '/v1/%s/%d/plugins/%d/plans/%d.json',
+            $this->scope,
             $this->developerId,
             $pluginId,
             $planId
