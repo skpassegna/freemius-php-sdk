@@ -10,7 +10,6 @@ use Freemius\SDK\Exceptions\ApiException;
 class CurlHttpClient implements HttpClientInterface
 {
     private string $baseUrl;
-    private string $scope;
 
     private const MAX_RETRIES = 3;
     private const RETRY_DELAY = 1; // in seconds
@@ -19,12 +18,10 @@ class CurlHttpClient implements HttpClientInterface
      * CurlHttpClient constructor.
      *
      * @param string $baseUrl The base URL for API requests.
-     * @param string $scope The API scope.
      */
-    public function __construct(string $baseUrl, string $scope)
+    public function __construct(string $baseUrl)
     {
         $this->baseUrl = $baseUrl;
-        $this->scope   = $scope;
     }
 
     /**
@@ -81,8 +78,8 @@ class CurlHttpClient implements HttpClientInterface
         while ($retries < self::MAX_RETRIES) {
             $ch = curl_init();
 
-            // Prepend the base URL and scope to the endpoint path
-            curl_setopt($ch, CURLOPT_URL, $this->baseUrl . '/v1/' . $this->scope . $url);
+            // Prepend the base URL to the endpoint path
+            curl_setopt($ch, CURLOPT_URL, $this->baseUrl . $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -97,6 +94,7 @@ class CurlHttpClient implements HttpClientInterface
             $response = curl_exec($ch);
 
             $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
             if (curl_errno($ch)) {
                 throw new ApiException(
@@ -116,8 +114,7 @@ class CurlHttpClient implements HttpClientInterface
             }
 
             // Check if the response is JSON
-            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-            if (strpos($contentType, 'application/json') !== false) {
+            if (str_contains($contentType, 'application/json')) {
                 $decodedResponse = json_decode($response, true);
 
                 if (json_last_error() !== JSON_ERROR_NONE) {

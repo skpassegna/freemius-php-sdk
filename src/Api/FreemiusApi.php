@@ -63,7 +63,7 @@ class FreemiusApi
         $config = require __DIR__ . '/../../config.php';
         $this->baseUrl = $this->sandbox ? $config['API_SANDBOX_BASE_URL'] : $config['API_BASE_URL'];
 
-        $this->httpClient   = $httpClient ?? new CurlHttpClient($this->baseUrl, $this->scope);
+        $this->httpClient   = $httpClient ?? new CurlHttpClient($this->baseUrl);
         $this->authenticator = $authenticator
             ?? new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey);
     }
