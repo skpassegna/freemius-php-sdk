@@ -65,7 +65,7 @@ class FreemiusApi
 
         $this->httpClient   = $httpClient ?? new CurlHttpClient($this->baseUrl);
         $this->authenticator = $authenticator
-            ?? new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey);
+            ?? new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey, $this->httpClient);
     }
 
     /**

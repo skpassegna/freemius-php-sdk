@@ -2,6 +2,8 @@
 
 namespace Freemius\SDK\Authentication;
 
+use Freemius\SDK\Http\HttpClientInterface;
+
 /**
  * Interface for Freemius API authenticators.
  *
@@ -17,8 +19,9 @@ interface AuthenticatorInterface
      * @param int    $developerId  The Freemius developer ID.
      * @param string $publicKey    The Freemius public key.
      * @param string $secretKey    The Freemius secret key.
+     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
      */
-    public function __construct(string $scope, int $developerId, string $publicKey, string $secretKey);
+    public function __construct(string $scope, int $developerId, string $publicKey, string $secretKey, HttpClientInterface $httpClient);
 
     /**
      * Get the authentication headers for an API request.

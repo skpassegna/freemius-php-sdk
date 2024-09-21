@@ -90,6 +90,10 @@ class CurlHttpClient implements HttpClientInterface
             if (!empty($headers)) {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             }
+            
+            // disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
+            // for 2 seconds if the server does not support this header.
+            $headers[] = 'Expect:';
 
             $response = curl_exec($ch);
 
