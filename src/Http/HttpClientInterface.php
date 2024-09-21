@@ -10,6 +10,13 @@ namespace Freemius\SDK\Http;
 interface HttpClientInterface
 {
     /**
+     * HttpClientInterface constructor.
+     *
+     * @param string $baseUrl The base URL for API requests.
+     */
+    public function __construct(string $baseUrl);
+
+    /**
      * Send a GET request.
      *
      * @param string $url     The URL to send the request to.

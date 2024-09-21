@@ -15,6 +15,7 @@ use Freemius\SDK\Api\Endpoints\PlansEndpoint;
 use Freemius\SDK\Api\Endpoints\PluginsEndpoint;
 use Freemius\SDK\Api\Endpoints\SubscriptionsEndpoint;
 use Freemius\SDK\Api\Endpoints\UsersEndpoint;
+use Freemius\SDK\Enums\Scope;
 use Freemius\SDK\Http\CurlHttpClient;
 use Freemius\SDK\Http\HttpClientInterface;
 
@@ -23,49 +24,54 @@ use Freemius\SDK\Http\HttpClientInterface;
  */
 class FreemiusApi
 {
-    private string $scope;
-    private int $developerId;
+    public const API_VERSION = 'v1';
+
     private string $publicKey;
     private string $secretKey;
     private bool $sandbox;
     private string $baseUrl;
 
     private HttpClientInterface $httpClient;
-    private AuthenticatorInterface $authenticator;
+    private ?AuthenticatorInterface $authenticator = null;
+    private Scope $scope;
+    private int $scopeId;
 
     /**
      * FreemiusApi constructor.
      *
-     * @param string                   $scope        The API scope (e.g., 'developer', 'app', 'user', 'install').
-     * @param int                      $developerId  The Freemius developer ID.
-     * @param string                   $publicKey    The Freemius public key.
-     * @param string                   $secretKey    The Freemius secret key.
-     * @param bool                     $sandbox      Whether to use the sandbox API environment.
-     * @param HttpClientInterface|null  $httpClient   The HTTP client to use for API requests (optional).
-     * @param AuthenticatorInterface|null $authenticator The authenticator to use for API requests (optional).
+     * @param string $publicKey The Freemius public key.
+     * @param string $secretKey The Freemius secret key.
+     * @param bool $sandbox Whether to use the sandbox API environment.
+     * @param HttpClientInterface|null $httpClient The HTTP client to use for API requests (optional).
      */
     public function __construct(
-        string $scope,
-        int $developerId,
         string $publicKey,
         string $secretKey,
         bool $sandbox = false,
-        ?HttpClientInterface $httpClient = null,
-        ?AuthenticatorInterface $authenticator = null
+        ?HttpClientInterface $httpClient = null
     ) {
-        $this->scope        = $scope;
-        $this->developerId  = $developerId;
-        $this->publicKey    = $publicKey;
-        $this->secretKey    = $secretKey;
-        $this->sandbox      = $sandbox;
+        $this->publicKey = $publicKey;
+        $this->secretKey = $secretKey;
+        $this->sandbox = $sandbox;
 
         // Load configuration
         $config = require __DIR__ . '/../../config.php';
         $this->baseUrl = $this->sandbox ? $config['API_SANDBOX_BASE_URL'] : $config['API_BASE_URL'];
 
-        $this->httpClient   = $httpClient ?? new CurlHttpClient($this->baseUrl);
-        $this->authenticator = $authenticator
-            ?? new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey, $this->httpClient);
+        $this->httpClient = $httpClient ?? new CurlHttpClient($this->baseUrl);
+    }
+
+    /**
+     * Set the API scope.
+     *
+     * @param Scope $scope
+     * @param int $scopeId
+     */
+    public function setScope(Scope $scope, int $scopeId): void
+    {
+        $this->scope = $scope;
+        $this->scopeId = $scopeId;
+        $this->authenticator = new SignatureAuthenticator($scope, $scopeId, $this->publicKey, $this->secretKey, $this->httpClient);
     }
 
     /**
@@ -75,7 +81,7 @@ class FreemiusApi
      */
     public function plugins(): PluginsEndpoint
     {
-        return new PluginsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new PluginsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -85,7 +91,7 @@ class FreemiusApi
      */
     public function users(): UsersEndpoint
     {
-        return new UsersEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new UsersEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -95,7 +101,7 @@ class FreemiusApi
      */
     public function installs(): InstallsEndpoint
     {
-        return new InstallsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new InstallsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -105,7 +111,7 @@ class FreemiusApi
      */
     public function plans(): PlansEndpoint
     {
-        return new PlansEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new PlansEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -115,7 +121,7 @@ class FreemiusApi
      */
     public function features(): FeaturesEndpoint
     {
-        return new FeaturesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new FeaturesEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -125,7 +131,7 @@ class FreemiusApi
      */
     public function licenses(): LicensesEndpoint
     {
-        return new LicensesEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new LicensesEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -135,7 +141,7 @@ class FreemiusApi
      */
     public function subscriptions(): SubscriptionsEndpoint
     {
-        return new SubscriptionsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new SubscriptionsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -145,7 +151,7 @@ class FreemiusApi
      */
     public function payments(): PaymentsEndpoint
     {
-        return new PaymentsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new PaymentsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -155,7 +161,7 @@ class FreemiusApi
      */
     public function coupons(): CouponsEndpoint
     {
-        return new CouponsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new CouponsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -165,7 +171,7 @@ class FreemiusApi
      */
     public function emails(): EmailsEndpoint
     {
-        return new EmailsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new EmailsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
     }
 
     /**
@@ -175,6 +181,19 @@ class FreemiusApi
      */
     public function events(): EventsEndpoint
     {
-        return new EventsEndpoint($this->httpClient, $this->authenticator, $this->developerId, $this->scope);
+        return new EventsEndpoint($this->httpClient, $this->authenticator, $this->scope, $this->scopeId, self::API_VERSION);
+    }
+
+    /**
+     * Generate a signed URL for an API request.
+     *
+     * @param string $url The request URL.
+     * @param array $params Optional query parameters.
+     *
+     * @return string The signed URL.
+     */
+    public function getSignedUrl(string $url, array $params = []): string
+    {
+        return $this->authenticator->getSignedUrl($url, $params);
     }
 }

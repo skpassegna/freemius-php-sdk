@@ -6,6 +6,7 @@ use Freemius\SDK\Authentication\AuthenticatorInterface;
 use Freemius\SDK\Http\HttpClientInterface;
 use Freemius\SDK\Entities\Event;
 use Freemius\SDK\Exceptions\ApiException;
+use Freemius\SDK\Enums\Scope;
 
 /**
  * Endpoint for interacting with Freemius events.
@@ -14,27 +15,31 @@ class EventsEndpoint
 {
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
-    private int $developerId;
-    private string $scope;
+    private Scope $scope;
+    private int $scopeId;
+    private string $apiVersion;
 
     /**
      * EventsEndpoint constructor.
      *
-     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
-     * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int $developerId The Freemius developer ID.
-     * @param string $scope The API scope.
+     * @param HttpClientInterface $httpClient
+     * @param AuthenticatorInterface $authenticator
+     * @param Scope $scope
+     * @param int $scopeId
+     * @param string $apiVersion
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId,
-        string $scope
+        Scope $scope,
+        int $scopeId,
+        string $apiVersion
     ) {
         $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId = $developerId;
         $this->scope = $scope;
+        $this->scopeId = $scopeId;
+        $this->apiVersion = $apiVersion;
     }
 
     /**
@@ -44,14 +49,17 @@ class EventsEndpoint
      * @param array $params Optional query parameters (e.g., 'type', 'install_id', 'user_id', 'license_id', 'fields', 'count').
      *
      * @return Event[] An array of Event entities.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getEvents(int $pluginId, array $params = []): array
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/events.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/events.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId
         );
 
@@ -89,14 +97,17 @@ class EventsEndpoint
      * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Event The Event entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getEvent(int $pluginId, int $eventId, array $params = []): Event
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/events/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/events/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $eventId
         );
@@ -116,5 +127,19 @@ class EventsEndpoint
             $response['license_id'] ?? null,
             $response['data'] ?? null
         );
+    }
+
+    /**
+     * Validate the current scope against allowed scopes.
+     *
+     * @param Scope[] $allowedScopes
+     *
+     * @throws ApiException If the scope is invalid.
+     */
+    private function validateScope(array $allowedScopes): void
+    {
+        if (!in_array($this->scope, $allowedScopes)) {
+            throw new ApiException([], 'Invalid scope for this method.');
+        }
     }
 }

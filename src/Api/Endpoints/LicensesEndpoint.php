@@ -6,6 +6,7 @@ use Freemius\SDK\Authentication\AuthenticatorInterface;
 use Freemius\SDK\Http\HttpClientInterface;
 use Freemius\SDK\Entities\License;
 use Freemius\SDK\Exceptions\ApiException;
+use Freemius\SDK\Enums\Scope;
 
 /**
  * Endpoint for interacting with Freemius licenses.
@@ -14,27 +15,31 @@ class LicensesEndpoint
 {
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
-    private int $developerId;
-    private string $scope;
+    private Scope $scope;
+    private int $scopeId;
+    private string $apiVersion;
 
     /**
      * LicensesEndpoint constructor.
      *
-     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
-     * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int $developerId The Freemius developer ID.
-     * @param string $scope The API scope.
+     * @param HttpClientInterface $httpClient
+     * @param AuthenticatorInterface $authenticator
+     * @param Scope $scope
+     * @param int $scopeId
+     * @param string $apiVersion
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId,
-        string $scope
+        Scope $scope,
+        int $scopeId,
+        string $apiVersion
     ) {
         $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId = $developerId;
         $this->scope = $scope;
+        $this->scopeId = $scopeId;
+        $this->apiVersion = $apiVersion;
     }
 
     /**
@@ -44,14 +49,17 @@ class LicensesEndpoint
      * @param array $params Optional query parameters (e.g., 'fields', 'filter', 'search', 'count').
      *
      * @return License[] An array of License entities.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getLicenses(int $pluginId, array $params = []): array
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/licenses.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/licenses.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId
         );
 
@@ -96,14 +104,17 @@ class LicensesEndpoint
      * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return License The License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getLicense(int $pluginId, int $licenseId, array $params = []): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/licenses/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/licenses/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $licenseId
         );
@@ -140,14 +151,17 @@ class LicensesEndpoint
      * @param array $data The license data to update.
      *
      * @return License The updated License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function updateLicense(int $pluginId, int $licenseId, array $data): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/licenses/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/licenses/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $licenseId
         );
@@ -184,14 +198,17 @@ class LicensesEndpoint
      * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return License The deleted License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function deleteLicense(int $pluginId, int $licenseId, array $params = []): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/licenses/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/licenses/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $licenseId
         );
@@ -226,14 +243,17 @@ class LicensesEndpoint
      * @param int $licenseId The license ID.
      *
      * @return License The updated License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function deactivateLicenseFromAllInstalls(int $pluginId, int $licenseId): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/licenses/%d/installs.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/licenses/%d/installs.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $licenseId
         );
@@ -269,14 +289,17 @@ class LicensesEndpoint
      * @param int $licenseId The license ID.
      *
      * @return License The updated License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function activateLicenseForInstall(int $pluginId, int $installId, int $licenseId): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId,
             $licenseId
@@ -314,14 +337,17 @@ class LicensesEndpoint
      * @param int $licenseId The license ID.
      *
      * @return License The updated License entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function deactivateLicenseFromInstall(int $pluginId, int $installId, int $licenseId): License
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/licenses/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId,
             $licenseId
@@ -348,5 +374,19 @@ class LicensesEndpoint
             $response['created'],
             $response['updated']
         );
+    }
+
+    /**
+     * Validate the current scope against allowed scopes.
+     *
+     * @param Scope[] $allowedScopes
+     *
+     * @throws ApiException If the scope is invalid.
+     */
+    private function validateScope(array $allowedScopes): void
+    {
+        if (!in_array($this->scope, $allowedScopes)) {
+            throw new ApiException([], 'Invalid scope for this method.');
+        }
     }
 }

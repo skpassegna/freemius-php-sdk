@@ -6,6 +6,7 @@ use Freemius\SDK\Authentication\AuthenticatorInterface;
 use Freemius\SDK\Http\HttpClientInterface;
 use Freemius\SDK\Entities\Install;
 use Freemius\SDK\Exceptions\ApiException;
+use Freemius\SDK\Enums\Scope;
 
 /**
  * Endpoint for interacting with Freemius installs (sites).
@@ -14,44 +15,51 @@ class InstallsEndpoint
 {
     private HttpClientInterface $httpClient;
     private AuthenticatorInterface $authenticator;
-    private int $developerId;
-    private string $scope;
+    private Scope $scope;
+    private int $scopeId;
+    private string $apiVersion;
 
     /**
      * InstallsEndpoint constructor.
      *
-     * @param HttpClientInterface $httpClient The HTTP client to use for API requests.
-     * @param AuthenticatorInterface $authenticator The authenticator to use for API requests.
-     * @param int $developerId The Freemius developer ID.
-     * @param string $scope The API scope.
+     * @param HttpClientInterface $httpClient
+     * @param AuthenticatorInterface $authenticator
+     * @param Scope $scope
+     * @param int $scopeId
+     * @param string $apiVersion
      */
     public function __construct(
         HttpClientInterface $httpClient,
         AuthenticatorInterface $authenticator,
-        int $developerId,
-        string $scope
+        Scope $scope,
+        int $scopeId,
+        string $apiVersion
     ) {
         $this->httpClient = $httpClient;
         $this->authenticator = $authenticator;
-        $this->developerId = $developerId;
         $this->scope = $scope;
+        $this->scopeId = $scopeId;
+        $this->apiVersion = $apiVersion;
     }
 
     /**
      * Retrieve a list of installs for a plugin.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param array $params   Optional query parameters (e.g., 'user_id', 'filter', 'search', 'reason_id', 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'user_id', 'filter', 'search', 'reason_id', 'fields', 'count').
      *
      * @return Install[] An array of Install entities.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getInstalls(int $pluginId, array $params = []): array
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL, Scope::USER]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId
         );
 
@@ -108,19 +116,22 @@ class InstallsEndpoint
     /**
      * Retrieve a specific install.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param array $params    Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Install The Install entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getInstall(int $pluginId, int $installId, array $params = []): Install
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL, Scope::USER]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId
         );
@@ -169,19 +180,22 @@ class InstallsEndpoint
     /**
      * Create a new install.
      *
-     * @param int   $pluginId The plugin ID.
-     * @param int   $userId   The user ID.
-     * @param array $data     The install data.
+     * @param int $pluginId The plugin ID.
+     * @param int $userId The user ID.
+     * @param array $data The install data.
      *
      * @return Install The created Install entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function createInstall(int $pluginId, int $userId, array $data): Install
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::USER]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/users/%d/installs.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/users/%d/installs.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $userId
         );
@@ -230,19 +244,22 @@ class InstallsEndpoint
     /**
      * Update an existing install.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param array $data      The install data to update.
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param array $data The install data to update.
      *
      * @return Install The updated Install entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function updateInstall(int $pluginId, int $installId, array $data): Install
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId
         );
@@ -291,17 +308,20 @@ class InstallsEndpoint
     /**
      * Delete an install (uninstall).
      *
-     * @param int $pluginId  The plugin ID.
+     * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
      *
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function deleteInstall(int $pluginId, int $installId): void
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId
         );
@@ -315,18 +335,18 @@ class InstallsEndpoint
     /**
      * Retrieve an install's uninstall details.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param array $params    Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return array An array containing the install's uninstall details.
      * @throws ApiException If the API request fails.
      */
     public function getUninstallDetails(int $pluginId, int $installId, array $params = []): array
     {
-        // This endpoint doesn't include the scope or developer ID in the URL
         $url = sprintf(
-            '/v1/plugins/%d/installs/%d/uninstall.json',
+            '/%s/plugins/%d/installs/%d/uninstall.json',
+            $this->apiVersion,
             $pluginId,
             $installId
         );
@@ -343,19 +363,22 @@ class InstallsEndpoint
     /**
      * Downgrade an install's plan to the plugin's default plan.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param array $params    Optional query parameters (e.g., 'fields').
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param array $params Optional query parameters (e.g., 'fields').
      *
      * @return Install The updated Install entity.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function downgradePlan(int $pluginId, int $installId, array $params = []): Install
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/downgrade.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/downgrade.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId
         );
@@ -404,20 +427,23 @@ class InstallsEndpoint
     /**
      * Retrieve updates for an install.
      *
-     * @param int    $pluginId  The plugin ID.
-     * @param int    $installId The install ID.
-     * @param string $version   The current plugin version.
-     * @param array  $params    Optional query parameters (e.g., 'fields', 'count').
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param string $version The current plugin version.
+     * @param array $params Optional query parameters (e.g., 'fields', 'count').
      *
      * @return array An array containing update information.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function getUpdates(int $pluginId, int $installId, string $version, array $params = []): array
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/updates.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/updates.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId
         );
@@ -436,20 +462,23 @@ class InstallsEndpoint
     /**
      * Download a specific plugin version for an install.
      *
-     * @param int    $pluginId  The plugin ID.
-     * @param int    $installId The install ID.
-     * @param int    $tagId     The tag/version ID.
-     * @param bool   $isPremium Whether to download the premium version.
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param int $tagId The tag/version ID.
+     * @param bool $isPremium Whether to download the premium version.
      *
      * @return string The plugin zip file content.
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/updates/%d.zip',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/updates/%d.zip',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId,
             $tagId
@@ -467,19 +496,22 @@ class InstallsEndpoint
     /**
      * Send a confirmation email for an install's user ownership change.
      *
-     * @param int   $pluginId  The plugin ID.
-     * @param int   $installId The install ID.
-     * @param int   $userId    The user ID.
-     * @param array $data      The ownership change data.
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param int $userId The user ID.
+     * @param array $data The ownership change data.
      *
-     * @throws ApiException If the API request fails.
+     * @throws ApiException If the API request fails or the scope is invalid.
      */
     public function sendOwnershipChangeConfirmation(int $pluginId, int $installId, int $userId, array $data): void
     {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
         $url = sprintf(
-            '/v1/%s/%d/plugins/%d/installs/%d/users/%d/ownership-change.json',
-            $this->scope,
-            $this->developerId,
+            '/%s/%s/%d/plugins/%d/installs/%d/users/%d/ownership-change.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
             $pluginId,
             $installId,
             $userId
@@ -490,5 +522,19 @@ class InstallsEndpoint
             $data,
             $this->authenticator->getAuthHeaders('PUT', $url, $data)
         );
+    }
+
+    /**
+     * Validate the current scope against allowed scopes.
+     *
+     * @param Scope[] $allowedScopes
+     *
+     * @throws ApiException If the scope is invalid.
+     */
+    private function validateScope(array $allowedScopes): void
+    {
+        if (!in_array($this->scope, $allowedScopes)) {
+            throw new ApiException([], 'Invalid scope for this method.');
+        }
     }
 }

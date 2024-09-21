@@ -9,7 +9,7 @@ use Freemius\SDK\Exceptions\ApiException;
  */
 class CurlHttpClient implements HttpClientInterface
 {
-    private string $baseUrl;
+    public string $baseUrl;
 
     private const MAX_RETRIES = 3;
     private const RETRY_DELAY = 1; // in seconds
@@ -85,12 +85,13 @@ class CurlHttpClient implements HttpClientInterface
 
             if (!empty($data)) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                $headers[] = 'Content-Type: application/json';
             }
 
             if (!empty($headers)) {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             }
-            
+
             // disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
             // for 2 seconds if the server does not support this header.
             $headers[] = 'Expect:';

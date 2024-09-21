@@ -3,45 +3,43 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Freemius\SDK\Api\FreemiusApi;
-use Freemius\SDK\Http\CurlHttpClient;
-use Freemius\SDK\Authentication\SignatureAuthenticator;
+use Freemius\SDK\Enums\Scope;
 use Freemius\SDK\Exceptions\ApiException;
 
-// https://guardiv.test
-
-// Freemius API credentials
-$scope        = 'developer';
-$developerId  = 17789;
+// Replace with your actual Freemius API credentials
+$scope        = Scope::DEVELOPER; // Supported scopes DEVELOPER, PLUGIN, INSTALL, USER, APP, STORE
+$scopeId      = 17789;  // Replace with your actual scope ID
 $publicKey    = 'pk_e9f68da8dc036c0085723313b9e2d';
 $secretKey    = 'sk_6SWIE]0xiZ6RHc]QaQ;)A(hpf1-*x';
 $sandbox      = false; // Set to false for production
 
+
 // Load configuration
 $config = require __DIR__ . '/config.php';
-$baseUrl = $sandbox ? $config['API_SANDBOX_BASE_URL'] : $config['API_BASE_URL'];
 
-// Initialize the HTTP client
-$httpClient = new CurlHttpClient($baseUrl);
-
-// Initialize the authenticator
-$authenticator = new SignatureAuthenticator($scope, $developerId, $publicKey, $secretKey, $httpClient);
 
 // Initialize the Freemius API client
-$api = new FreemiusApi($scope, $developerId, $publicKey, $secretKey, $sandbox, $httpClient, $authenticator);
+$api = new FreemiusApi($publicKey, $secretKey, $sandbox);
 
 try {
+    // Set the scope to developer
+    $api->setScope($scope , $scopeId);
+
     // Get a list of plugins for the developer
     $plugins = $api->plugins()->getPlugins();
 
-    dd($plugins);
+    dd($plugins); //  Dump the plugins array for debugging purposes
 
     /* // Print the title of each plugin
     foreach ($plugins as $plugin) {
         echo 'Plugin Title: ' . $plugin->title . PHP_EOL;
-    } */
+    }
 
-    /* // Get a specific plugin
-    $pluginId = 123; // Replace with an actual plugin ID
+    // Set the scope to plugin
+    $pluginId = 67890; // Replace with an actual plugin ID
+    $api->setScope(Scope::PLUGIN, $pluginId);
+
+    // Get a specific plugin
     $plugin = $api->plugins()->getPlugin($pluginId);
 
     // Print the plugin's slug
