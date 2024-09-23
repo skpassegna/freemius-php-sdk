@@ -4,5 +4,6 @@
 /tests/_output
 /tests/coverage
 */example.php
+notes.md
 example.php
 demo.php

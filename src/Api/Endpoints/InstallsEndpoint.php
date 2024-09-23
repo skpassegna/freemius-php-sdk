@@ -525,6 +525,70 @@ class InstallsEndpoint
     }
 
     /**
+     * Sync an install.
+     *
+     * @param int $pluginId The plugin ID.
+     * @param int $installId The install ID.
+     * @param array $data The install data.
+     *
+     * @return Install The synced Install entity.
+     * @throws ApiException If the API request fails or the scope is invalid.
+     */
+    public function syncInstall(int $pluginId, int $installId, array $data): Install
+    {
+        $this->validateScope([Scope::INSTALL]);
+
+        $url = sprintf(
+            '/%s/%s/%d/plugins/%d/installs/%d/sync.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
+            $pluginId,
+            $installId
+        );
+
+        $response = $this->httpClient->put(
+            $url,
+            $data,
+            $this->authenticator->getAuthHeaders('PUT', $url, $data)
+        );
+
+        return new Install(
+            $response['id'],
+            $response['plugin_id'],
+            $response['user_id'],
+            $response['url'],
+            $response['title'],
+            $response['version'],
+            $response['plan_id'] ?? null,
+            $response['license_id'] ?? null,
+            $response['trial_plan_id'] ?? null,
+            $response['trial_ends'] ?? null,
+            $response['subscription_id'] ?? null,
+            $response['gross'],
+            $response['country_code'],
+            $response['language'] ?? null,
+            $response['platform_version'] ?? null,
+            $response['sdk_version'] ?? null,
+            $response['programming_language_version'] ?? null,
+            $response['is_active'],
+            $response['is_disconnected'] ?? false,
+            $response['is_premium'],
+            $response['is_uninstalled'],
+            $response['is_locked'],
+            $response['source'],
+            $response['upgraded'] ?? null,
+            $response['last_seen_at'] ?? null,
+            $response['last_served_update_version'] ?? null,
+            $response['secret_key'],
+            $response['public_key'],
+            $response['created'],
+            $response['updated'],
+            $response['charset'] ?? null
+        );
+    }
+
+    /**
      * Validate the current scope against allowed scopes.
      *
      * @param Scope[] $allowedScopes

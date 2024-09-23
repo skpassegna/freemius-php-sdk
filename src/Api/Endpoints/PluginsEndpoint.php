@@ -4,6 +4,7 @@ namespace Freemius\SDK\Api\Endpoints;
 
 use Freemius\SDK\Authentication\AuthenticatorInterface;
 use Freemius\SDK\Http\HttpClientInterface;
+use Freemius\SDK\Entities\License;
 use Freemius\SDK\Entities\Plugin;
 use Freemius\SDK\Exceptions\ApiException;
 use Freemius\SDK\Enums\Scope;
@@ -24,7 +25,6 @@ class PluginsEndpoint
      *
      * @param HttpClientInterface $httpClient
      * @param AuthenticatorInterface $authenticator
-     * @param int $developerId
      * @param Scope $scope
      * @param int $scopeId
      * @param string $apiVersion
@@ -62,7 +62,6 @@ class PluginsEndpoint
             $params,
             $this->authenticator->getAuthHeaders('GET', $url)
         );
-
 
         if (!isset($response['plugins']) || !is_array($response['plugins'])) {
             throw new ApiException($response, 'Invalid API response: missing plugins data.');
@@ -425,6 +424,60 @@ class PluginsEndpoint
         );
 
         return $response;
+    }
+
+    /**
+     * Retrieve a plugin's licenses.
+     *
+     * @param int $pluginId The plugin ID.
+     * @param array $params Optional query parameters (e.g., 'fields', 'count').
+     *
+     * @return License[] An array of License entities.
+     * @throws ApiException If the API request fails or the scope is invalid.
+     */
+    public function getPluginLicenses(int $pluginId, array $params = []): array
+    {
+        $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $url = sprintf(
+            '/%s/%s/%d/plugins/%d/licenses.json',
+            $this->apiVersion,
+            $this->scope->value,
+            $this->scopeId,
+            $pluginId
+        );
+
+        $response = $this->httpClient->get(
+            $url,
+            $params,
+            $this->authenticator->getAuthHeaders('GET', $url)
+        );
+
+        if (!isset($response['licenses']) || !is_array($response['licenses'])) {
+            throw new ApiException($response, 'Invalid API response: missing licenses data.');
+        }
+
+        $licenses = [];
+        foreach ($response['licenses'] as $licenseData) {
+            $licenses[] = new License(
+                $licenseData['id'],
+                $licenseData['plugin_id'],
+                $licenseData['user_id'],
+                $licenseData['plan_id'],
+                $licenseData['pricing_id'],
+                $licenseData['quota'],
+                $licenseData['activated'],
+                $licenseData['activated_local'] ?? null,
+                $licenseData['expiration'] ?? null,
+                $licenseData['is_free_localhost'],
+                $licenseData['is_block_features'],
+                $licenseData['is_cancelled'],
+                $licenseData['created'],
+                $licenseData['updated']
+            );
+        }
+
+        return $licenses;
     }
 
     /**

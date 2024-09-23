@@ -73,6 +73,7 @@ class CurlHttpClient implements HttpClientInterface
      */
     private function makeRequest(string $url, string $method, array $data = [], array $headers = []): array|string
     {
+
         $retries = 0;
 
         while ($retries < self::MAX_RETRIES) {

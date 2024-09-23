@@ -78,6 +78,7 @@ class SignatureAuthenticator implements AuthenticatorInterface
         // If secret and public keys are identical, it means that
         // the signature uses public key hash encoding.
         $authType = ($this->secretKey !== $this->publicKey) ? 'FS' : 'FSP';
+        // $authType = 'FS';
 
         $headers = [
             'Date' => $date,
