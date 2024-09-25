@@ -12,9 +12,6 @@ class CurlHttpClient implements HttpClientInterface
 {
     public string $baseUrl;
 
-    private const MAX_RETRIES = 3;
-    private const RETRY_DELAY = 1; // in seconds
-
     /**
      * CurlHttpClient constructor.
      *
@@ -83,93 +80,79 @@ class CurlHttpClient implements HttpClientInterface
      */
     private function makeRequest(string $url, string $method, array $data = [], array $headers = []): array|string
     {
-        $retries = 0;
+        $ch = curl_init();
 
-        while ($retries < self::MAX_RETRIES) {
-            $ch = curl_init();
+        // Prepend the base URL to the endpoint path
+        curl_setopt($ch, CURLOPT_URL, $this->baseUrl . $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
-            // Prepend the base URL to the endpoint path
-            curl_setopt($ch, CURLOPT_URL, $this->baseUrl . $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        if (!empty($data)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $headers[] = 'Content-Type: application/json';
+        }
 
-            if (!empty($data)) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                $headers[] = 'Content-Type: application/json';
-            }
+        if (!empty($headers)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
 
-            if (!empty($headers)) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            }
+        // Disable the 'Expect: 100-continue' behavior. This causes CURL to wait
+        // for 2 seconds if the server does not support this header.
+        $headers[] = 'Expect:';
 
-            // Disable the 'Expect: 100-continue' behavior. This causes CURL to wait
-            // for 2 seconds if the server does not support this header.
-            $headers[] = 'Expect:';
+        $response = curl_exec($ch);
 
-            $response = curl_exec($ch);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
-            $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        if (curl_errno($ch)) {
+            $errorMessage = curl_error($ch);
+            $errorCode = curl_errno($ch);
+            curl_close($ch);
+            throw new SDKException(
+                "cURL error: {$errorMessage}",
+                [
+                    'curl_error' => $errorMessage,
+                    'curl_errno' => $errorCode,
+                ],
+                $errorCode
+            );
+        }
 
-            if (curl_errno($ch)) {
-                $errorMessage = curl_error($ch);
-                $errorCode = curl_errno($ch);
-                curl_close($ch);
+        curl_close($ch);
+
+        // Check if the response is JSON
+        if (str_contains($contentType, 'application/json')) {
+            $decodedResponse = json_decode($response, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new SDKException(
-                    "cURL error: {$errorMessage}",
+                    'Invalid JSON response from API: ' . json_last_error_msg(),
                     [
-                        'curl_error' => $errorMessage,
-                        'curl_errno' => $errorCode,
+                        'json_last_error' => json_last_error(),
+                        'json_last_error_msg' => json_last_error_msg(),
                     ],
-                    $errorCode
+                    json_last_error()
                 );
             }
 
-            curl_close($ch);
-
-            // Check for rate limiting errors (assuming HTTP status code 429)
-            if ($statusCode === 429) {
-                $retries++;
-                sleep(self::RETRY_DELAY);
-                continue;
+            // Check for API errors (status codes 400 and above)
+            if ($statusCode >= 400) {
+                throw new ApiException(
+                    $decodedResponse['error']['type'] ?? 'Unknown Error',
+                    $decodedResponse['error']['message'] ?? 'An unknown error occurred.',
+                    $decodedResponse['error']['code'] ?? 'unknown',
+                    $statusCode,
+                    $decodedResponse['error']['timestamp'] ?? date(DATE_ATOM)
+                );
             }
 
-            // Check if the response is JSON
-            if (str_contains($contentType, 'application/json')) {
-                $decodedResponse = json_decode($response, true);
+            $decodedResponse['statusCode'] = $statusCode;
 
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new SDKException(
-                        'Invalid JSON response from API: ' . json_last_error_msg(),
-                        [
-                            'json_last_error' => json_last_error(),
-                            'json_last_error_msg' => json_last_error_msg(),
-                        ],
-                        json_last_error()
-                    );
-                }
-
-                // Check for API errors (status codes 400 and above)
-                if ($statusCode >= 400) {
-                    throw new ApiException(
-                        $decodedResponse['error']['type'] ?? 'Unknown Error',
-                        $decodedResponse['error']['message'] ?? 'An unknown error occurred.',
-                        $decodedResponse['error']['code'] ?? 'unknown',
-                        $statusCode,
-                        $decodedResponse['error']['timestamp'] ?? date(DATE_ATOM)
-                    );
-                }
-
-                $decodedResponse['statusCode'] = $statusCode;
-
-                return $decodedResponse;
-            } else {
-                // Return raw response content for non-JSON responses
-                return $response;
-            }
+            return $decodedResponse;
+        } else {
+            // Return raw response content for non-JSON responses
+            return $response;
         }
-
-        // If we reach here, all retries have failed
-        throw new SDKException('API request failed after multiple retries.');
     }
 }
