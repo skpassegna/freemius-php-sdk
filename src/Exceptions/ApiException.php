@@ -3,6 +3,7 @@
 namespace Freemius\SDK\Exceptions;
 
 use Exception;
+use Throwable;
 
 /**
  * Exception class for API-related errors.
@@ -15,11 +16,6 @@ class ApiException extends FreemiusException
      * @var string The API error type.
      */
     private string $type;
-
-    /**
-     * @var string The API error code.
-     */
-    private string $code;
 
     /**
      * @var int The HTTP status code of the API response.
@@ -49,14 +45,14 @@ class ApiException extends FreemiusException
         int $httpStatusCode,
         string $timestamp,
         int $sdkCode = 0,
-        ?Exception $previous = null
+        ?Throwable $previous = null
     ) {
         $this->type = $type;
         $this->code = $code;
         $this->httpStatusCode = $httpStatusCode;
         $this->timestamp = $timestamp;
 
-        parent::__construct($message, $sdkCode, $previous);
+        parent::__construct($message, $sdkCode, null, $previous);
     }
 
     /**
@@ -67,16 +63,6 @@ class ApiException extends FreemiusException
     public function getType(): string
     {
         return $this->type;
-    }
-
-    /**
-     * Get the API error code.
-     *
-     * @return string
-     */
-    public function getApiCode(): string
-    {
-        return $this->code;
     }
 
     /**

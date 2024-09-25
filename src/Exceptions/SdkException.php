@@ -2,7 +2,6 @@
 
 namespace Freemius\SDK\Exceptions;
 
-use Exception;
 use Throwable;
 
 /**
@@ -13,31 +12,25 @@ use Throwable;
 class SDKException extends FreemiusException
 {
     /**
-     * @var array Contextual information related to the exception.
-     */
-    private array $context;
-
-    /**
      * SDKException constructor.
      *
      * @param string $message The exception message.
-     * @param array $context Contextual information related to the exception.
+     * @param array $context Additional context data.
      * @param int $code The exception code.
      * @param Throwable|null $previous The previous exception (if any).
      */
-    public function __construct(string $message = '', array $context = [], int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $message = "", array $context = [], int $code = 0, ?Throwable $previous = null)
     {
-        $this->context = $context;
-        parent::__construct($message, $code, $previous);
-    }
+        // Initialize the Context object
+        $this->context = new Context();
 
-    /**
-     * Get contextual information related to the exception.
-     *
-     * @return array
-     */
-    public function getContext(): array
-    {
-        return $this->context;
+        // Add context data to the exception
+        if (!empty($context)) {
+            foreach ($context as $key => $value) {
+                $this->context->add($key, $value);
+            }
+        }
+
+        parent::__construct($message, $code, $this->context, $previous);
     }
 }
