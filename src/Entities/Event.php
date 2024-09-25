@@ -7,13 +7,13 @@ namespace Freemius\SDK\Entities;
  */
 class Event
 {
-    public int $id;
-    public string $date;
-    public string $type;
-    public ?int $install_id;
-    public ?int $user_id;
-    public ?int $license_id;
-    public ?array $data;
+    public readonly int $id;
+    public readonly string $date;
+    public readonly string $type;
+    public readonly ?int $install_id;
+    public readonly ?int $user_id;
+    public readonly ?int $license_id;
+    public readonly ?array $data;
 
     /**
      * Event constructor.

@@ -46,14 +46,36 @@ class LicensesEndpoint
      * Retrieve a list of licenses for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields', 'filter', 'search', 'count').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param string|null $filter Filter licenses by status (e.g., 'active', 'cancelled', 'expired', 'refunded', 'fraud').
+     * @param string|null $search Search licenses by license key.
+     * @param int|null $count Maximum number of licenses to retrieve.
      *
      * @return License[] An array of License entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getLicenses(int $pluginId, array $params = []): array
-    {
+    public function getLicenses(
+        int $pluginId,
+        ?string $fields = null,
+        ?string $filter = null,
+        ?string $search = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($filter !== null) {
+            $params['filter'] = $filter;
+        }
+        if ($search !== null) {
+            $params['search'] = $search;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/licenses.json',
@@ -62,10 +84,13 @@ class LicensesEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -101,14 +126,19 @@ class LicensesEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $licenseId The license ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return License The License entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getLicense(int $pluginId, int $licenseId, array $params = []): License
+    public function getLicense(int $pluginId, int $licenseId, ?string $fields = null): License
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/licenses/%d.json',
@@ -118,10 +148,13 @@ class LicensesEndpoint
             $pluginId,
             $licenseId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -195,14 +228,19 @@ class LicensesEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $licenseId The license ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return License The deleted License entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function deleteLicense(int $pluginId, int $licenseId, array $params = []): License
+    public function deleteLicense(int $pluginId, int $licenseId, ?string $fields = null): License
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/licenses/%d.json',
@@ -212,6 +250,9 @@ class LicensesEndpoint
             $pluginId,
             $licenseId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->delete(
             $url,

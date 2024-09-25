@@ -46,14 +46,46 @@ class PaymentsEndpoint
      * Retrieve a list of payments for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'user_id', 'license_id', 'subscription_id', 'status', 'fields', 'count').
+     * @param int|null $userId Filter payments by user ID.
+     * @param int|null $licenseId Filter payments by license ID.
+     * @param int|null $subscriptionId Filter payments by subscription ID.
+     * @param string|null $status Filter payments by status (e.g., 'succeeded', 'failed', 'refunded', 'pending', 'disputed', 'cancelled', 'in_progress').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of payments to retrieve.
      *
      * @return Payment[] An array of Payment entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPayments(int $pluginId, array $params = []): array
-    {
+    public function getPayments(
+        int $pluginId,
+        ?int $userId = null,
+        ?int $licenseId = null,
+        ?int $subscriptionId = null,
+        ?string $status = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($userId !== null) {
+            $params['user_id'] = $userId;
+        }
+        if ($licenseId !== null) {
+            $params['license_id'] = $licenseId;
+        }
+        if ($subscriptionId !== null) {
+            $params['subscription_id'] = $subscriptionId;
+        }
+        if ($status !== null) {
+            $params['status'] = $status;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/payments.json',
@@ -62,10 +94,13 @@ class PaymentsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -100,14 +135,19 @@ class PaymentsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $paymentId The payment ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Payment The Payment entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPayment(int $pluginId, int $paymentId, array $params = []): Payment
+    public function getPayment(int $pluginId, int $paymentId, ?string $fields = null): Payment
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/payments/%d.json',
@@ -117,10 +157,13 @@ class PaymentsEndpoint
             $pluginId,
             $paymentId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -146,14 +189,19 @@ class PaymentsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $paymentId The payment ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Payment The refunded Payment entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function refundPayment(int $pluginId, int $paymentId, array $params = []): Payment
+    public function refundPayment(int $pluginId, int $paymentId, ?string $fields = null): Payment
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/payments/%d/refund.json',
@@ -163,6 +211,9 @@ class PaymentsEndpoint
             $pluginId,
             $paymentId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->post(
             $url,

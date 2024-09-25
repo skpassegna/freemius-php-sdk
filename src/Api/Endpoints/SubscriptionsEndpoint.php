@@ -46,14 +46,41 @@ class SubscriptionsEndpoint
      * Retrieve a list of subscriptions for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'user_id', 'plan_id', 'status', 'fields', 'count').
+     * @param int|null $userId Filter subscriptions by user ID.
+     * @param int|null $planId Filter subscriptions by plan ID.
+     * @param string|null $status Filter subscriptions by status (e.g., 'active', 'trialing', 'cancelled', 'expired', 'past_due').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of subscriptions to retrieve.
      *
      * @return Subscription[] An array of Subscription entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getSubscriptions(int $pluginId, array $params = []): array
-    {
+    public function getSubscriptions(
+        int $pluginId,
+        ?int $userId = null,
+        ?int $planId = null,
+        ?string $status = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($userId !== null) {
+            $params['user_id'] = $userId;
+        }
+        if ($planId !== null) {
+            $params['plan_id'] = $planId;
+        }
+        if ($status !== null) {
+            $params['status'] = $status;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/subscriptions.json',
@@ -62,10 +89,13 @@ class SubscriptionsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -97,14 +127,19 @@ class SubscriptionsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $subscriptionId The subscription ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Subscription The Subscription entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getSubscription(int $pluginId, int $subscriptionId, array $params = []): Subscription
+    public function getSubscription(int $pluginId, int $subscriptionId, ?string $fields = null): Subscription
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/subscriptions/%d.json',
@@ -114,10 +149,13 @@ class SubscriptionsEndpoint
             $pluginId,
             $subscriptionId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -140,14 +178,19 @@ class SubscriptionsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $subscriptionId The subscription ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Subscription The cancelled Subscription entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function cancelSubscription(int $pluginId, int $subscriptionId, array $params = []): Subscription
+    public function cancelSubscription(int $pluginId, int $subscriptionId, ?string $fields = null): Subscription
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/subscriptions/%d.json',
@@ -157,6 +200,9 @@ class SubscriptionsEndpoint
             $pluginId,
             $subscriptionId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->delete(
             $url,
@@ -182,14 +228,19 @@ class SubscriptionsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $subscriptionId The subscription ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Subscription The synced Subscription entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function syncSubscription(int $pluginId, int $subscriptionId, array $params = []): Subscription
+    public function syncSubscription(int $pluginId, int $subscriptionId, ?string $fields = null): Subscription
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/subscriptions/%d/sync.json',
@@ -199,6 +250,9 @@ class SubscriptionsEndpoint
             $pluginId,
             $subscriptionId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->put(
             $url,

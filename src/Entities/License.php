@@ -7,38 +7,38 @@ namespace Freemius\SDK\Entities;
  */
 class License
 {
-    public int $id;
-    public int $plugin_id;
-    public int $user_id;
-    public int $plan_id;
-    public int $pricing_id;
-    public int $quota;
-    public string $activated;
-    public ?string $activated_local;
-    public ?string $expiration;
-    public bool $is_free_localhost;
-    public bool $is_block_features;
-    public bool $is_cancelled;
-    public string $created;
-    public string $updated;
+    public readonly int $id;
+    public readonly int $plugin_id;
+    public readonly int $user_id;
+    public readonly int $plan_id;
+    public readonly int $pricing_id;
+    public readonly int $quota;
+    public readonly string $activated;
+    public readonly ?string $activated_local;
+    public readonly ?string $expiration;
+    public readonly bool $is_free_localhost;
+    public readonly bool $is_block_features;
+    public readonly bool $is_cancelled;
+    public readonly string $created;
+    public readonly string $updated;
 
     /**
      * License constructor.
      *
-     * @param int         $id              The license ID.
-     * @param int         $plugin_id        The plugin ID.
-     * @param int         $user_id          The user ID.
-     * @param int         $plan_id          The plan ID.
-     * @param int         $pricing_id        The pricing ID.
-     * @param int         $quota           The license quota (number of sites).
-     * @param string      $activated       The activation timestamp.
-     * @param string|null $activated_local  The local activation timestamp (optional).
-     * @param string|null $expiration      The expiration timestamp (optional).
-     * @param bool        $is_free_localhost Whether the license is free for localhost installs.
-     * @param bool        $is_block_features  Whether the license blocks features.
-     * @param bool        $is_cancelled      Whether the license is cancelled.
-     * @param string      $created         The creation timestamp.
-     * @param string      $updated         The last update timestamp.
+     * @param int $id The license ID.
+     * @param int $plugin_id The plugin ID.
+     * @param int $user_id The user ID.
+     * @param int $plan_id The plan ID.
+     * @param int $pricing_id The pricing ID.
+     * @param int $quota The license quota (number of sites).
+     * @param string $activated The activation timestamp.
+     * @param string|null $activated_local The local activation timestamp (optional).
+     * @param string|null $expiration The expiration timestamp (optional).
+     * @param bool $is_free_localhost Whether the license is free for localhost installs.
+     * @param bool $is_block_features Whether the license blocks features.
+     * @param bool $is_cancelled Whether the license is cancelled.
+     * @param string $created The creation timestamp.
+     * @param string $updated The last update timestamp.
      */
     public function __construct(
         int $id,

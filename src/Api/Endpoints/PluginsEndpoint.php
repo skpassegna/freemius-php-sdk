@@ -46,22 +46,44 @@ class PluginsEndpoint
     /**
      * Retrieve a list of plugins for the developer.
      *
-     * @param array $params Optional query parameters (e.g., 'all', 'fields', 'count', 'sort').
+     * @param bool|null $all Retrieve all plugins, including hidden ones (only for developer scope).
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of plugins to retrieve.
+     * @param string|null $sort Sorting order (e.g., 'id', '-id', 'title', '-title').
      *
      * @return Plugin[] An array of Plugin entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPlugins(array $params = []): array
+    public function getPlugins(?bool $all = null, ?string $fields = null, ?int $count = null, ?string $sort = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
 
+        $params = [];
+        if ($this->scope === Scope::DEVELOPER && $all !== null) {
+            $params['all'] = $all;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
+        if ($sort !== null) {
+            $params['sort'] = $sort;
+        }
+
         $url = sprintf('/%s/%s/%d/plugins.json', $this->apiVersion, $this->scope->value, $this->scopeId);
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
+
+        dd($response);
 
         if (!isset($response['plugins']) || !is_array($response['plugins'])) {
             throw new ApiException($response, 'Invalid API response: missing plugins data.');
@@ -89,14 +111,19 @@ class PluginsEndpoint
      * Retrieve a specific plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Plugin The Plugin entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPlugin(int $pluginId, array $params = []): Plugin
+    public function getPlugin(int $pluginId, ?string $fields = null): Plugin
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d.json',
@@ -105,10 +132,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -260,14 +290,19 @@ class PluginsEndpoint
      * Retrieve a plugin's status.
      *
      * @param int $pluginId The plugin ID.
-     * @param bool $isUpdate Whether to check for updates.
+     * @param bool|null $isUpdate Whether to check for updates.
      *
      * @return array An array containing the plugin's status information.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPluginStatus(int $pluginId, bool $isUpdate = false): array
+    public function getPluginStatus(int $pluginId, ?bool $isUpdate = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($isUpdate !== null) {
+            $params['is_update'] = $isUpdate;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/is_active.json',
@@ -276,10 +311,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            ['is_update' => $isUpdate],
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -300,6 +338,14 @@ class PluginsEndpoint
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
 
+        $params = [];
+        if ($start !== null) {
+            $params['start'] = $start;
+        }
+        if ($end !== null) {
+            $params['end'] = $end;
+        }
+
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/stats.json',
             $this->apiVersion,
@@ -307,18 +353,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
-
-        $params = [];
-        if ($start) {
-            $params['start'] = $start;
-        }
-        if ($end) {
-            $params['end'] = $end;
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
         }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -360,14 +401,19 @@ class PluginsEndpoint
      * @param int $pluginId The plugin ID.
      * @param string $from The start date (YYYY-MM-DD HH:MM:SS).
      * @param string $to The end date (YYYY-MM-DD HH:MM:SS).
-     * @param string $interval The aggregation interval ('day', 'week', 'month').
+     * @param string|null $interval The aggregation interval ('day', 'week', 'month').
      *
      * @return array An array containing the plugin's revenues data.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPluginRevenues(int $pluginId, string $from, string $to, string $interval = 'day'): array
+    public function getPluginRevenues(int $pluginId, string $from, string $to, ?string $interval = 'day'): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($interval !== null) {
+            $params['interval'] = $interval;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/revenues.json',
@@ -376,14 +422,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            [
-                'from' => $from,
-                'to' => $to,
-                'interval' => $interval,
-            ],
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -396,14 +441,19 @@ class PluginsEndpoint
      * @param int $pluginId The plugin ID.
      * @param string $from The start date (YYYY-MM-DD HH:MM:SS).
      * @param string $to The end date (YYYY-MM-DD HH:MM:SS).
-     * @param string $interval The aggregation interval ('day', 'week', 'month').
+     * @param string|null $interval The aggregation interval ('day', 'week', 'month').
      *
      * @return array An array containing the plugin's licenses activity data.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPluginLicensesActivity(int $pluginId, string $from, string $to, string $interval = 'day'): array
+    public function getPluginLicensesActivity(int $pluginId, string $from, string $to, ?string $interval = 'day'): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($interval !== null) {
+            $params['interval'] = $interval;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/licenses.json',
@@ -412,14 +462,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            [
-                'from' => $from,
-                'to' => $to,
-                'interval' => $interval,
-            ],
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -430,14 +479,23 @@ class PluginsEndpoint
      * Retrieve a plugin's licenses.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields', 'count').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of licenses to retrieve.
      *
      * @return License[] An array of License entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPluginLicenses(int $pluginId, array $params = []): array
+    public function getPluginLicenses(int $pluginId, ?string $fields = null, ?int $count = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/licenses.json',
@@ -446,10 +504,13 @@ class PluginsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

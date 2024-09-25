@@ -46,14 +46,46 @@ class EventsEndpoint
      * Retrieve a list of events for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'type', 'install_id', 'user_id', 'license_id', 'fields', 'count').
+     * @param string|null $type Filter events by type.
+     * @param int|null $installId Filter events by install ID.
+     * @param int|null $userId Filter events by user ID.
+     * @param int|null $licenseId Filter events by license ID.
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of events to retrieve.
      *
      * @return Event[] An array of Event entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getEvents(int $pluginId, array $params = []): array
-    {
+    public function getEvents(
+        int $pluginId,
+        ?string $type = null,
+        ?int $installId = null,
+        ?int $userId = null,
+        ?int $licenseId = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($type !== null) {
+            $params['type'] = $type;
+        }
+        if ($installId !== null) {
+            $params['install_id'] = $installId;
+        }
+        if ($userId !== null) {
+            $params['user_id'] = $userId;
+        }
+        if ($licenseId !== null) {
+            $params['license_id'] = $licenseId;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/events.json',
@@ -62,10 +94,13 @@ class EventsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -94,14 +129,19 @@ class EventsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $eventId The event ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Event The Event entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getEvent(int $pluginId, int $eventId, array $params = []): Event
+    public function getEvent(int $pluginId, int $eventId, ?string $fields = null): Event
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/events/%d.json',
@@ -111,10 +151,13 @@ class EventsEndpoint
             $pluginId,
             $eventId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

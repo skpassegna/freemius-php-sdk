@@ -46,14 +46,41 @@ class UsersEndpoint
      * Retrieve a list of users for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of users to retrieve.
+     * @param string|null $email Filter users by email address.
+     * @param string|null $filter Filter users by status (e.g., 'active', 'pending', 'cancelled', 'expired', 'refunded', 'fraud').
+     * @param string|null $search Search users by email, first name, or last name.
      *
      * @return User[] An array of User entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getUsers(int $pluginId, array $params = []): array
-    {
+    public function getUsers(
+        int $pluginId,
+        ?string $fields = null,
+        ?int $count = null,
+        ?string $email = null,
+        ?string $filter = null,
+        ?string $search = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
+        if ($email !== null) {
+            $params['email'] = $email;
+        }
+        if ($filter !== null) {
+            $params['filter'] = $filter;
+        }
+        if ($search !== null) {
+            $params['search'] = $search;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/users.json',
@@ -62,10 +89,13 @@ class UsersEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -97,14 +127,19 @@ class UsersEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $userId The user ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return User The User entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getUser(int $pluginId, int $userId, array $params = []): User
+    public function getUser(int $pluginId, int $userId, ?string $fields = null): User
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/users/%d.json',
@@ -114,10 +149,13 @@ class UsersEndpoint
             $pluginId,
             $userId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -223,14 +261,41 @@ class UsersEndpoint
      * Download a CSV file of users for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields', 'count', 'email', 'filter', 'search').
+     * @param string|null $fields Comma-separated list of fields to include in the CSV file.
+     * @param int|null $count Maximum number of users to include in the CSV file.
+     * @param string|null $email Filter users by email address.
+     * @param string|null $filter Filter users by status (e.g., 'active', 'pending', 'cancelled', 'expired', 'refunded', 'fraud').
+     * @param string|null $search Search users by email, first name, or last name.
      *
      * @return string The CSV content.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function downloadUsersCSV(int $pluginId, array $params = []): string
-    {
+    public function downloadUsersCSV(
+        int $pluginId,
+        ?string $fields = null,
+        ?int $count = null,
+        ?string $email = null,
+        ?string $filter = null,
+        ?string $search = null
+    ): string {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
+        if ($email !== null) {
+            $params['email'] = $email;
+        }
+        if ($filter !== null) {
+            $params['filter'] = $filter;
+        }
+        if ($search !== null) {
+            $params['search'] = $search;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/users.csv',
@@ -239,10 +304,13 @@ class UsersEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

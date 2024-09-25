@@ -46,14 +46,27 @@ class FeaturesEndpoint
      * Retrieve a list of features for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'plan_id', 'fields', 'count').
+     * @param int|null $planId Filter features by plan ID.
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of features to retrieve.
      *
      * @return Feature[] An array of Feature entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getFeatures(int $pluginId, array $params = []): array
+    public function getFeatures(int $pluginId, ?int $planId = null, ?string $fields = null, ?int $count = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($planId !== null) {
+            $params['plan_id'] = $planId;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/features.json',
@@ -62,10 +75,13 @@ class FeaturesEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -94,14 +110,19 @@ class FeaturesEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $featureId The feature ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Feature The Feature entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getFeature(int $pluginId, int $featureId, array $params = []): Feature
+    public function getFeature(int $pluginId, int $featureId, ?string $fields = null): Feature
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/features/%d.json',
@@ -111,10 +132,13 @@ class FeaturesEndpoint
             $pluginId,
             $featureId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

@@ -45,14 +45,31 @@ class EmailsEndpoint
      * Retrieve a list of email templates for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'trigger', 'fields', 'count').
+     * @param string|null $trigger Filter email templates by trigger.
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of email templates to retrieve.
      *
      * @return array An array of email template data.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getEmailTemplates(int $pluginId, array $params = []): array
-    {
+    public function getEmailTemplates(
+        int $pluginId,
+        ?string $trigger = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($trigger !== null) {
+            $params['trigger'] = $trigger;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/emails.json',
@@ -61,10 +78,13 @@ class EmailsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -80,14 +100,19 @@ class EmailsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param string $trigger The email trigger (e.g., 'after_purchase').
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return array An array containing the email template data.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getEmailTemplate(int $pluginId, string $trigger, array $params = []): array
+    public function getEmailTemplate(int $pluginId, string $trigger, ?string $fields = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/emails/%s.json',
@@ -97,10 +122,13 @@ class EmailsEndpoint
             $pluginId,
             $trigger
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

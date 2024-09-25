@@ -7,30 +7,30 @@ namespace Freemius\SDK\Entities;
  */
 class Subscription
 {
-    public int $id;
-    public int $user_id;
-    public int $plan_id;
-    public int $license_id;
-    public string $status;
-    public string $billing_cycle;
-    public string $payment_method;
-    public ?string $next_payment;
-    public string $created;
-    public string $updated;
+    public readonly int $id;
+    public readonly int $user_id;
+    public readonly int $plan_id;
+    public readonly int $license_id;
+    public readonly string $status;
+    public readonly string $billing_cycle;
+    public readonly string $payment_method;
+    public readonly ?string $next_payment;
+    public readonly string $created;
+    public readonly string $updated;
 
     /**
      * Subscription constructor.
      *
-     * @param int         $id            The subscription ID.
-     * @param int         $user_id        The user ID.
-     * @param int         $plan_id        The plan ID.
-     * @param int         $license_id     The license ID.
-     * @param string      $status        The subscription status.
-     * @param string      $billing_cycle  The billing cycle (e.g., 'annual', 'monthly').
-     * @param string      $payment_method The payment method (e.g., 'paypal', 'stripe').
-     * @param string|null $next_payment   The next payment timestamp (optional).
-     * @param string      $created       The creation timestamp.
-     * @param string      $updated       The last update timestamp.
+     * @param int $id The subscription ID.
+     * @param int $user_id The user ID.
+     * @param int $plan_id The plan ID.
+     * @param int $license_id The license ID.
+     * @param string $status The subscription status.
+     * @param string $billing_cycle The billing cycle (e.g., 'annual', 'monthly').
+     * @param string $payment_method The payment method (e.g., 'paypal', 'stripe').
+     * @param string|null $next_payment The next payment timestamp (optional).
+     * @param string $created The creation timestamp.
+     * @param string $updated The last update timestamp.
      */
     public function __construct(
         int $id,

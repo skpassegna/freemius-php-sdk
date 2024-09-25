@@ -46,14 +46,46 @@ class InstallsEndpoint
      * Retrieve a list of installs for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'user_id', 'filter', 'search', 'reason_id', 'fields', 'count').
+     * @param int|null $userId Filter installs by user ID. Applicable for 'developer', 'plugin', and 'user' scopes.
+     * @param string|null $filter Filter installs by status (e.g., 'active', 'cancelled', 'expired', 'refunded', 'fraud').
+     * @param string|null $search Search installs by URL or title.
+     * @param int|null $reasonId Filter installs by uninstall reason ID.
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of installs to retrieve.
      *
      * @return Install[] An array of Install entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getInstalls(int $pluginId, array $params = []): array
-    {
+    public function getInstalls(
+        int $pluginId,
+        ?int $userId = null,
+        ?string $filter = null,
+        ?string $search = null,
+        ?int $reasonId = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL, Scope::USER]);
+
+        $params = [];
+        if (in_array($this->scope, [Scope::DEVELOPER, Scope::PLUGIN, Scope::USER]) && $userId !== null) {
+            $params['user_id'] = $userId;
+        }
+        if ($filter !== null) {
+            $params['filter'] = $filter;
+        }
+        if ($search !== null) {
+            $params['search'] = $search;
+        }
+        if ($reasonId !== null) {
+            $params['reason_id'] = $reasonId;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/installs.json',
@@ -62,10 +94,13 @@ class InstallsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -118,14 +153,19 @@ class InstallsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Install The Install entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getInstall(int $pluginId, int $installId, array $params = []): Install
+    public function getInstall(int $pluginId, int $installId, ?string $fields = null): Install
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL, Scope::USER]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/installs/%d.json',
@@ -135,10 +175,13 @@ class InstallsEndpoint
             $pluginId,
             $installId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -337,23 +380,31 @@ class InstallsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return array An array containing the install's uninstall details.
      * @throws ApiException If the API request fails.
      */
-    public function getUninstallDetails(int $pluginId, int $installId, array $params = []): array
+    public function getUninstallDetails(int $pluginId, int $installId, ?string $fields = null): array
     {
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+
         $url = sprintf(
             '/%s/plugins/%d/installs/%d/uninstall.json',
             $this->apiVersion,
             $pluginId,
             $installId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -365,14 +416,19 @@ class InstallsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Install The updated Install entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function downgradePlan(int $pluginId, int $installId, array $params = []): Install
+    public function downgradePlan(int $pluginId, int $installId, ?string $fields = null): Install
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/installs/%d/downgrade.json',
@@ -382,10 +438,13 @@ class InstallsEndpoint
             $pluginId,
             $installId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->put(
             $url,
-            [],
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('PUT', $url)
         );
 
@@ -430,14 +489,29 @@ class InstallsEndpoint
      * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
      * @param string $version The current plugin version.
-     * @param array $params Optional query parameters (e.g., 'fields', 'count').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of updates to retrieve.
      *
      * @return array An array containing update information.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getUpdates(int $pluginId, int $installId, string $version, array $params = []): array
-    {
+    public function getUpdates(
+        int $pluginId,
+        int $installId,
+        string $version,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
+        $params['version'] = $version;
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/installs/%d/updates.json',
@@ -447,12 +521,13 @@ class InstallsEndpoint
             $pluginId,
             $installId
         );
-
-        $params['version'] = $version;
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -465,14 +540,19 @@ class InstallsEndpoint
      * @param int $pluginId The plugin ID.
      * @param int $installId The install ID.
      * @param int $tagId The tag/version ID.
-     * @param bool $isPremium Whether to download the premium version.
+     * @param bool|null $isPremium Whether to download the premium version.
      *
      * @return string The plugin zip file content.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function downloadVersion(int $pluginId, int $installId, int $tagId, bool $isPremium = false): string
+    public function downloadVersion(int $pluginId, int $installId, int $tagId, ?bool $isPremium = null): string
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN, Scope::INSTALL]);
+
+        $params = [];
+        if ($isPremium !== null) {
+            $params['is_premium'] = $isPremium;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/installs/%d/updates/%d.zip',
@@ -483,10 +563,13 @@ class InstallsEndpoint
             $installId,
             $tagId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            ['is_premium' => $isPremium],
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

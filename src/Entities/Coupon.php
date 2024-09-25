@@ -7,36 +7,36 @@ namespace Freemius\SDK\Entities;
  */
 class Coupon
 {
-    public int $id;
-    public int $plugin_id;
-    public string $code;
-    public int $discount;
-    public string $type;
-    public ?int $plan_id;
-    public ?int $pricing_id;
-    public int $redemptions;
-    public ?int $max_redemptions;
-    public ?string $expiry;
-    public string $status;
-    public string $created;
-    public string $updated;
+    public readonly int $id;
+    public readonly int $plugin_id;
+    public readonly string $code;
+    public readonly int $discount;
+    public readonly string $type;
+    public readonly ?int $plan_id;
+    public readonly ?int $pricing_id;
+    public readonly int $redemptions;
+    public readonly ?int $max_redemptions;
+    public readonly ?string $expiry;
+    public readonly string $status;
+    public readonly string $created;
+    public readonly string $updated;
 
     /**
      * Coupon constructor.
      *
-     * @param int         $id             The coupon ID.
-     * @param int         $plugin_id       The plugin ID.
-     * @param string      $code           The coupon code.
-     * @param int         $discount       The discount amount or percentage.
-     * @param string      $type           The discount type ('percentage' or 'fixed').
-     * @param int|null    $plan_id         The plan ID the coupon applies to (optional).
-     * @param int|null    $pricing_id       The pricing ID the coupon applies to (optional).
-     * @param int         $redemptions    The number of times the coupon has been redeemed.
-     * @param int|null    $max_redemptions The maximum number of redemptions (optional).
-     * @param string|null $expiry         The coupon expiry date (optional).
-     * @param string      $status         The coupon status ('active' or 'inactive').
-     * @param string      $created        The creation timestamp.
-     * @param string      $updated        The last update timestamp.
+     * @param int $id The coupon ID.
+     * @param int $plugin_id The plugin ID.
+     * @param string $code The coupon code.
+     * @param int $discount The discount amount or percentage.
+     * @param string $type The discount type ('percentage' or 'fixed').
+     * @param int|null $plan_id The plan ID the coupon applies to (optional).
+     * @param int|null $pricing_id The pricing ID the coupon applies to (optional).
+     * @param int $redemptions The number of times the coupon has been redeemed.
+     * @param int|null $max_redemptions The maximum number of redemptions (optional).
+     * @param string|null $expiry The coupon expiry date (optional).
+     * @param string $status The coupon status ('active' or 'inactive').
+     * @param string $created The creation timestamp.
+     * @param string $updated The last update timestamp.
      */
     public function __construct(
         int $id,

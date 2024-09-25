@@ -46,14 +46,46 @@ class CouponsEndpoint
      * Retrieve a list of coupons for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'code', 'plan_id', 'pricing_id', 'status', 'fields', 'count').
+     * @param string|null $code Filter coupons by code.
+     * @param int|null $planId Filter coupons by plan ID.
+     * @param int|null $pricingId Filter coupons by pricing ID.
+     * @param string|null $status Filter coupons by status (e.g., 'active', 'inactive').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of coupons to retrieve.
      *
      * @return Coupon[] An array of Coupon entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getCoupons(int $pluginId, array $params = []): array
-    {
+    public function getCoupons(
+        int $pluginId,
+        ?string $code = null,
+        ?int $planId = null,
+        ?int $pricingId = null,
+        ?string $status = null,
+        ?string $fields = null,
+        ?int $count = null
+    ): array {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($code !== null) {
+            $params['code'] = $code;
+        }
+        if ($planId !== null) {
+            $params['plan_id'] = $planId;
+        }
+        if ($pricingId !== null) {
+            $params['pricing_id'] = $pricingId;
+        }
+        if ($status !== null) {
+            $params['status'] = $status;
+        }
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/coupons.json',
@@ -62,10 +94,13 @@ class CouponsEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -100,14 +135,19 @@ class CouponsEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $couponId The coupon ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Coupon The Coupon entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getCoupon(int $pluginId, int $couponId, array $params = []): Coupon
+    public function getCoupon(int $pluginId, int $couponId, ?string $fields = null): Coupon
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/coupons/%d.json',
@@ -117,10 +157,13 @@ class CouponsEndpoint
             $pluginId,
             $couponId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 

@@ -46,14 +46,23 @@ class PlansEndpoint
      * Retrieve a list of plans for a plugin.
      *
      * @param int $pluginId The plugin ID.
-     * @param array $params Optional query parameters (e.g., 'fields', 'count').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
+     * @param int|null $count Maximum number of plans to retrieve.
      *
      * @return Plan[] An array of Plan entities.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPlans(int $pluginId, array $params = []): array
+    public function getPlans(int $pluginId, ?string $fields = null, ?int $count = null): array
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
+        if ($count !== null) {
+            $params['count'] = $count;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/plans.json',
@@ -62,10 +71,13 @@ class PlansEndpoint
             $this->scopeId,
             $pluginId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
@@ -106,14 +118,19 @@ class PlansEndpoint
      *
      * @param int $pluginId The plugin ID.
      * @param int $planId The plan ID.
-     * @param array $params Optional query parameters (e.g., 'fields').
+     * @param string|null $fields Comma-separated list of fields to include in the response.
      *
      * @return Plan The Plan entity.
      * @throws ApiException If the API request fails or the scope is invalid.
      */
-    public function getPlan(int $pluginId, int $planId, array $params = []): Plan
+    public function getPlan(int $pluginId, int $planId, ?string $fields = null): Plan
     {
         $this->validateScope([Scope::DEVELOPER, Scope::PLUGIN]);
+
+        $params = [];
+        if ($fields !== null) {
+            $params['fields'] = $fields;
+        }
 
         $url = sprintf(
             '/%s/%s/%d/plugins/%d/plans/%d.json',
@@ -123,10 +140,13 @@ class PlansEndpoint
             $pluginId,
             $planId
         );
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
 
         $response = $this->httpClient->get(
             $url,
-            $params,
+            [], // Parameters are now included in the URL
             $this->authenticator->getAuthHeaders('GET', $url)
         );
 
